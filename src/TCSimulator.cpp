@@ -31,7 +31,7 @@ public:
 
 		for (int i = pixel1.first; i < pixel2.first-1; ++i)
 		{
-			for (int j = (int) floor(a*i + b); j =< a*(i+1) + b; ++j)
+			for (int j = (int) floor(a*i + b); j <= a*(i+1) + b; ++j)
 			{
 				cout << i << " " << j << endl;
 				distances[i][j] = 1;
