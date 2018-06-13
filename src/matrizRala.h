@@ -25,6 +25,32 @@ public:
 
 };
 
+
+//--------------------------------------------------------FUNCIONES PARA MOSTRAR MATRICES
+
+void mostrarVectorPair(map<int,double>* m, int n){
+	// cout << "longitud de vec: " << vec.size() << endl;
+	cout << "[";
+	for(int i =  0 ; i < n ; i ++){
+		map<int,double>::iterator it = m -> find(i);
+		string comaOrEnd = i == n-1 ? "" : ", "; 
+		if(it != m->end()){
+			cout <<  it -> second << comaOrEnd;
+		}else{
+			cout <<"0" << comaOrEnd;
+		}
+	}
+	cout << "]" << endl;
+}
+
+void mostrarRala(Rala* matriz){
+	for(int link = 0; link < matriz->n; link++){
+		mostrarVectorPair(&matriz->conex[link], matriz->n);
+	}
+}
+
+
+
 //OPERACIONES
 
 
