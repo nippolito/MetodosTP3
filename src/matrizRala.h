@@ -12,15 +12,16 @@ using namespace std;
 
 class Rala{
 public:
-	Rala(int size ){
-		n = size;
-
+	Rala(int filas, int columnas ){
+		n = filas;
+		m = columnas;
 		for(int i = 0 ; i < n ; i ++){
 			conex.push_back(map<int,double> ());
 		}
 	}
 
-	int n;
+	int n; //Cantidad de filas
+	int m; //Cant de columnas, o longitud de filas.
 	vector< map<int, double> > conex; // lista de adyacencia. 
 
 };
@@ -28,13 +29,13 @@ public:
 
 //--------------------------------------------------------FUNCIONES PARA MOSTRAR MATRICES
 
-void mostrarVectorPair(map<int,double>* m, int n){
+void mostrarVectorPair(map<int,double>* filas, int m){
 	// cout << "longitud de vec: " << vec.size() << endl;
 	cout << "[";
-	for(int i =  0 ; i < n ; i ++){
-		map<int,double>::iterator it = m -> find(i);
-		string comaOrEnd = i == n-1 ? "" : ", "; 
-		if(it != m->end()){
+	for(int i =  0 ; i < m ; i ++){
+		map<int,double>::iterator it = filas -> find(i);
+		string comaOrEnd = i == m-1 ? "" : ", "; 
+		if(it != filas->end()){
 			cout <<  it -> second << comaOrEnd;
 		}else{
 			cout <<"0" << comaOrEnd;
@@ -45,7 +46,7 @@ void mostrarVectorPair(map<int,double>* m, int n){
 
 void mostrarRala(Rala* matriz){
 	for(int link = 0; link < matriz->n; link++){
-		mostrarVectorPair(&matriz->conex[link], matriz->n);
+		mostrarVectorPair(&matriz->conex[link], matriz->m);
 	}
 }
 
@@ -56,6 +57,13 @@ void mostrarRala(Rala* matriz){
 
 // inserta elemento en la matriz A.
 void insertarElemento(Rala& A, int fila, int columna, double valor ){
+	
+	//Nuevo: Si se quiere insertar un elemento que excede la longitud de la fila, o cant. de columnas, explota.
+	if(A.m <= columna) { 
+		cout << "Error de dimensiones. La columna donde se desea insertar no existe" << endl;
+		return;
+	}
+	
 	map<int,double>::iterator it = A.conex[fila].find(columna);
 	if( it == A.conex[fila].end() ){
 		A.conex[fila].insert(pair<int,double>(columna,valor));			
@@ -64,19 +72,9 @@ void insertarElemento(Rala& A, int fila, int columna, double valor ){
 	}
 }
 
-// devuelve el grado de la página j (o sea, la cantidad de elems en la columna j, o #linksSalientes)
-int gradoSalida(struct Rala& A, int j){
-	int res = 0;
-	int n = A.n;
-	for(int i = 0; i < n; i++){
-		if( A.conex[i].find(j) != A.conex[i].end()){
-			res++;
-		}
-	}
-	return res;
-}
 
 // crea en At la matriz transpuesta de A
+// PRECONDICION: A y At aunque vacias, deben tener las dimensiones correctas.
 void createTranspose(Rala& A, Rala& At){
 	int n = A.n;
 	for(int i = 0; i < n ; i ++){
@@ -87,42 +85,27 @@ void createTranspose(Rala& A, Rala& At){
 }
 
 // crea matriz identidad necesaria para el cálculo del pageRank
-Rala CrearIdentidad(int n ){
-	Rala res = Rala(n);
-	for(int i = 0 ; i < n; i++){
+//Ahora puede ser la identidad no cuadrada
+Rala CrearIdentidad(int n, int m ){
+	Rala res = Rala(n,m);
+	int mayor = max(n,m);
+	for(int i = 0 ; i < mayor; i++){
 		insertarElemento(res, i, i, 1 );
 	}
 	return res;
 }
 
-// genera el vector e que es necesario para el cálculo del pageRank
-vector<double> generarVectorE(int n){
-	vector <double> result(n, 1.0);
-	return result;
-}
 
-// A tiene que ser matriz nula. W matriz de conectividad.
-// Devuelve la diagonal en A
-int generarMatrizDiagonalD(Rala & A, Rala & W){
-	if (A.n != W.n){ return -1;}
-	int n = W.n;
 
-		for (int fila = 0; fila < n; ++fila)
-		{
-			int grado = gradoSalida(W, fila);
-			if(grado != 0){
-				
-				double valor = 1.0/grado;
-				insertarElemento(A, fila, fila, valor);
-			}
 
-		}
-
-		return 1;	
-}
 
 // suma las matrices A y B y devuelve la suma en C
-void sumaMatricial(Rala& A, Rala& B, Rala& C){ 
+void sumaMatricial(Rala& A, Rala& B, Rala& C){
+	if(A.n != B.n || A.m != B.m){
+		cout<< "Error de dimensiones al sumar matrices no compatibles!" << endl;
+		return;
+	}
+
 	int n = A.n;
 	for(int i = 0; i < n; i++){
 		map<int, double> filA = A.conex[i];
@@ -170,6 +153,10 @@ double multiplicarFilas(map<int,double>& fila, map<int,double>& col){
 	return ac;
 }
 
+
+//OLD. USAR NUEVA MultiplicacionMatricial (de matrices no cuadradas)
+
+/*
 // multiplica las matrices A y B. Devuelve la multiplicación en C
 void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 	int n = A.n;
@@ -186,10 +173,15 @@ void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 		}
 	}
 }
+*/
+
+
+
 
 // A = A*valor
 // modifica A
 void multiplicacionPorEscalar(Rala& A, double valor){
+
 	for (int i = 0; i < A.conex.size(); i++){
 		for(map<int,double>::iterator it = (A.conex[i]).begin(); it != (A.conex[i]).end(); it++){
 			it -> second *= valor;
@@ -304,21 +296,20 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 
 //A, B: MATRICES A MULTIPLICAR
 //C: MATRIZ RESULTADO DEBE TENER LAS DIMENSIONES CORRECTAS (aunque como es rala, basta con que C.n sea igual que A.n)
-void multiplicacionMatricialNoCuadrada(Rala& A, Rala& B, Rala& C){
+void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 	int nA = A.n;
-	int nC = C.n;
-	if (nA != nC){
+	if(A.m != B.n || A.n != C.n || B.m != C.m){
 		
 		cout << "Error al multiplicar matrices no cuadradas! La matriz de salida no tiene la misma cantidad de filas que A"<< endl;
 		return;
 	}
 
-	Rala transp = Rala(nA);
+	Rala transp = Rala(A.m, A.n);
 	createTranspose(B, transp);
 
 	//Ahora transp tiene:
 	//transp.conex.size = cantidad de columnas
-	int maxColumnaB = transp.conex.size();
+	int maxColumnaB = transp.m;
 
 	//Itero por las i filas de A
 	for(int i = 0; i < nA; i++){
@@ -373,4 +364,53 @@ void resolverPageRank(Rala& W, vector<double>& res, double p){
 */
 
 
+//EN DESUSO
+/*
+// genera el vector e que es necesario para el cálculo del pageRank
+vector<double> generarVectorE(int n){
+	vector <double> result(n, 1.0);
+	return result;
+}
+*/
+
+
+//EN DESUSO
+/*
+// A tiene que ser matriz nula. W matriz de conectividad.
+// Devuelve la diagonal en A
+int generarMatrizDiagonalD(Rala & A, Rala & W){
+	if (A.n != W.n){ return -1;}
+	int n = W.n;
+
+		for (int fila = 0; fila < n; ++fila)
+		{
+			int grado = gradoSalida(W, fila);
+			if(grado != 0){
+				
+				double valor = 1.0/grado;
+				insertarElemento(A, fila, fila, valor);
+			}
+
+		}
+
+		return 1;	
+}
+*/
+
+
+
+//EN DESUSO
+/*
+// devuelve el grado de la página j (o sea, la cantidad de elems en la columna j, o #linksSalientes)
+int gradoSalida(struct Rala& A, int j){
+	int res = 0;
+	int n = A.n;
+	for(int i = 0; i < n; i++){
+		if( A.conex[i].find(j) != A.conex[i].end()){
+			res++;
+		}
+	}
+	return res;
+}
+*/
 

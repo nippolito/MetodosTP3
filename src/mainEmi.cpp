@@ -13,9 +13,9 @@
 using namespace std;
 
 void Test1ParaMult(){ 	// pasa, todo OK
-	Rala A = Rala(3);
+	Rala A = Rala(3,3);
 
-	Rala B = Rala(3);
+	Rala B = Rala(3,2);
 
 	/*
 	0 0 3	* 1	2 		3 0
@@ -40,8 +40,8 @@ void Test1ParaMult(){ 	// pasa, todo OK
 	mostrarRala(&A);
 	mostrarRala(&B);
 
-	Rala C = Rala(A.n);
-	multiplicacionMatricialNoCuadrada(A, B, C);
+	Rala C = Rala(A.n, B.m);
+	multiplicacionMatricial(A, B, C);
 	cout << endl;
 	mostrarRala(&C);	
 }
