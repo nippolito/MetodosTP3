@@ -30,7 +30,6 @@ Image::Image(std::string newFilePath){
 };
 Image::~Image(){
 	delete [] imageBuffer;
-
 };
 
 void Image::aplanateImageArray(uchar* array){

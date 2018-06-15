@@ -8,8 +8,17 @@
 using namespace std;
 
 class Image
-{
+{	
 public:
+	//Properties
+	uchar* imageBuffer;
+	string filePath;
+	int height;
+	int width;
+	string label;
+
+
+	//Methods
 	Image(std::string newFilePath);
 	Image();
 	~Image();
@@ -17,16 +26,6 @@ public:
 	void SaveImage(std::string newFilePath);
 	uchar obtainPixelValue(unsigned int pixelNumber);
 	void aplanateImageArray(uchar* array);
-
-	std::string filePath;
-	int height;
-	int width;
-	string label;
-private:
-	uchar* imageBuffer;
-	
-
-	
 };
 
 #endif //__IMAGE_H__

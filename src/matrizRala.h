@@ -1,3 +1,6 @@
+#ifndef __RALA_H__
+#define __RALA_H__
+
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
@@ -60,7 +63,7 @@ void insertarElemento(Rala& A, int fila, int columna, double valor ){
 	
 	//Nuevo: Si se quiere insertar un elemento que excede la longitud de la fila, o cant. de columnas, explota.
 	if(A.m <= columna) { 
-		cout << "Error de dimensiones. La columna donde se desea insertar no existe" << endl;
+		cout << "Error de dimensiones. La posicon: (" << fila<< ", " << columna << ")" << " no esta permitida" << endl;
 		return;
 	}
 	
@@ -414,3 +417,4 @@ int gradoSalida(struct Rala& A, int j){
 }
 */
 
+#endif
