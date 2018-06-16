@@ -21,8 +21,7 @@ void testReal(){
 	pair<double,double> pixel1;
 	pair<double,double> pixel2;
 	Simulator.createTwoRandomPoints(Simulator.getHeight(), Simulator.getWidth(), pixel1, pixel2);
-	int tiempoRayo = Simulator.createTCRay(pixel1, pixel2, matrizDistancias);
-	cout << tiempoRayo << endl;
+	Simulator.createTCRay(pixel1, pixel2, matrizDistancias);
 }
 
 void testNoiser(){

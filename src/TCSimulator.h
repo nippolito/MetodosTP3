@@ -38,9 +38,10 @@ class TCSimulator
 {
 public:
 	
+	//Properties
+	Image* imageMatrix;
 
 	//Methods
-<<<<<<< HEAD
 
 	//Agregar ruido con distribucion salt & pepper, paso p probabilidad como argumento y defino t = 1-p,
 	//iterando sobre los pixeles obtengo un numero random r y si p<r<t entonces el pixel se mantiene igual,
@@ -73,9 +74,7 @@ public:
 
 	}
 
-=======
 	//pixel 1 siempre a izquierda del pixel 2
->>>>>>> 191fb8606d6b239089efba11c54036dc21471330
 	void createTCRay(pair<double,double> pixel1, pair<double,double> pixel2, Rala& distances){
 		//nos aseguramos que el primer pixel tenga un x menor a pixel2
 		//los rayos pueden "ir en sentido contrario" pero para la simulacion los trataremos SIEMPRE
@@ -188,9 +187,7 @@ private:
 	bool areInSameEdge(pair<int,int> pixel1, pair<int,int> pixel2){
 		return (pixel1.first == pixel2.first && (pixel1.first == 0 || pixel1.first == getWidth()-1 )) || (pixel1.second == pixel2.second && (pixel1.second = 0 || pixel1.second == getHeight()-1) );
 	}
-	//Properties
-	Image* imageMatrix;
-
+	
 };
 
 #endif
