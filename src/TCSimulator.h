@@ -10,6 +10,9 @@
 
 using namespace std;
 
+int green=0;
+int red = 1;
+int blue = 2;
 
 struct Recta{
 	double a;
@@ -37,6 +40,7 @@ public:
 	
 
 	//Methods
+<<<<<<< HEAD
 
 	//Agregar ruido con distribucion salt & pepper, paso p probabilidad como argumento y defino t = 1-p,
 	//iterando sobre los pixeles obtengo un numero random r y si p<r<t entonces el pixel se mantiene igual,
@@ -69,6 +73,9 @@ public:
 
 	}
 
+=======
+	//pixel 1 siempre a izquierda del pixel 2
+>>>>>>> 191fb8606d6b239089efba11c54036dc21471330
 	void createTCRay(pair<double,double> pixel1, pair<double,double> pixel2, Rala& distances){
 		//nos aseguramos que el primer pixel tenga un x menor a pixel2
 		//los rayos pueden "ir en sentido contrario" pero para la simulacion los trataremos SIEMPRE
@@ -90,7 +97,8 @@ public:
 				if(k > distances.n ) k = distances.n  ;// esto cuando se va por el techo la recta. 
 
 				for (; j < k; ++j){
-					insertarElemento(distances, i, j, 1);
+					cout << i << " " << j << endl;
+					insertarElemento(distances,j, i,  1);
 				}
 			}		
 		}
@@ -104,7 +112,8 @@ public:
 				//cout << "i: " << i << ", j: " << j << ", k: " << k << endl; 
 				for (; j > k; j--)
 				{
-					insertarElemento(distances, i, j-1, 1);
+					cout << i << " " << j-1 << endl;
+					insertarElemento(distances, j-1, i , 1);
 				}
 			}	
 		}
@@ -133,6 +142,19 @@ public:
 	int getHeight(){
 		return imageMatrix->height;
 	}
+
+	double tiempoDeRecorrido(Rala& distances){
+		double tiempo = 0 ;
+		int n = distances.n;
+		int m = distances.m;
+		for(int i = 0 ; i < n ; i ++){
+			for(int j = 0 ; j < m; j ++){
+				tiempo += distances.conex[i][j] * (imageMatrix->imageBuffer[i*m*3 + j + green] + imageMatrix->imageBuffer[i*m*3 + j + red] + imageMatrix->imageBuffer[i*m*3 + j + blue]) / 3;
+			}
+		}
+		return tiempo;
+	}
+
 
 	//setea en pixel1 y pixel2 dos puntos random dentro de la planilla
 	//ACLARACION: siempre pixel1 esta a la izquierda de pixel2
