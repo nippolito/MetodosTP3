@@ -157,6 +157,8 @@ double multiplicarFilas(map<int,double>& fila, map<int,double>& col){
 }
 
 
+
+
 //OLD. USAR NUEVA MultiplicacionMatricial (de matrices no cuadradas)
 
 /*
@@ -328,7 +330,63 @@ void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 }
 
 
+//Dado que al crear una matriz rala, esta no esta "vacia" sino que posee un map por cada fila vacio,
+//"Añadir filas" no es mas que reemplazar la fila existente por otra que se desea crear. 
+//Usar este metodo para contruir y luego rellenar la matriz A solucion final.
+void reemplazarFila(Rala& A,int posicion, map<int,double> fila){
+	A.conex[posicion] = fila;
+}
+
 	
+
+//Toma una matriz rala, donde solo hay 1 en los pixels por donde pasa el rayo. En el resto hay 0.
+//Lo convierte en una fila de la matriz rala de la solucion final. (Insertar en la matriz final a mano)
+map<int, double> convertirRayoEnFila(Rala& A){
+	map<int,double> res;
+
+	int numeroDePixel = 0;
+	int nfilas = A.n;
+	int mcolumnas = A.m;
+
+	for (int i = 0; i < nfilas; ++i)
+	{
+		for (int j = 0; j < mcolumnas; ++j)
+		{
+			map<int,double>::iterator it = A.conex[i].find(j);
+			if( it != A.conex[i].end() ){
+				res.insert(pair<int,double>(numeroDePixel, 1));
+			}
+
+			numeroDePixel++;
+		}
+	}
+
+	return res;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //PAGERANK TP1 (EN DESUSO)
 
 // resuelve el PageRank
