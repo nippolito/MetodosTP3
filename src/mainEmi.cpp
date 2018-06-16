@@ -76,10 +76,30 @@ void TestParaAplanar(){ 	// pasa, todo OK
 	
 }
 
+void TestParaCM(){
+	Rala A = Rala(3,3);
+
+	insertarElemento(A, 0, 0, 1);
+	insertarElemento(A, 1, 1, 1);
+	insertarElemento(A, 2, 2, 1);
+	
+	vector<double> b;
+	b.push_back(4);
+	b.push_back(5);
+	b.push_back(1);
+
+	vector<double> res = resolverCM(A, b);
+
+	for (int i = 0; i < 3; ++i)
+	{
+		cout << res[i] << endl;
+	}
+}
 
 
 int main(){
 	//Test1ParaMult();
-	TestParaAplanar();
+	//TestParaAplanar();
+	TestParaCM();
 	return 1;
 }

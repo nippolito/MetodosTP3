@@ -284,7 +284,8 @@ void eliminacionGaussiana(Rala & A, vector<double> & conjunta){
 // resuelve ecuaciones lineales y deja en res el resultado
 void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & res , int n ){
 	eliminacionGaussiana(A, conjunta);
-	
+	cout << "pasa eliminacion gaussiana" << endl;
+
 	for(int i = n-1; i >= 0 ; i --){
 		double ac = 0 ;
 		for(int j = n-1 ; j > i ; j --){
@@ -365,7 +366,24 @@ map<int, double> convertirRayoEnFila(Rala& A){
 }
 
 
+//Resolver CM: AtAx = Atb;
+vector<double> resolverCM(Rala& A, vector<double> b){
+	int n = A.m;
 
+	vector<double> x(n, 0);
+	Rala At = Rala(A.m, A.n);
+	createTranspose(A, At);
+	
+	vector<double> Atb (b.size(), 0);
+	multiplicacionPorVector(At, b, Atb);
+
+	Rala AtA = Rala(A.m, A.m);
+	multiplicacionMatricial(At, A, AtA);
+
+	solveLinearEquations(AtA, Atb, x, n);
+	return x;
+
+}
 
 
 
