@@ -23,6 +23,7 @@ public:
 	Image();
 	~Image();
 
+	void EditPixelValue(unsigned int pixelNumber, uchar value);
 	void SaveImage(std::string newFilePath);
 	uchar obtainPixelValue(unsigned int pixelNumber);
 	void aplanateImageArray(uchar* array);

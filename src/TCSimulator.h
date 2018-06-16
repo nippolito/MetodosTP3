@@ -34,11 +34,41 @@ struct Recta{
 class TCSimulator
 {
 public:
-	//Properties
-	Image* imageMatrix;
-
+	
 
 	//Methods
+
+	//Agregar ruido con distribucion salt & pepper, paso p probabilidad como argumento y defino t = 1-p,
+	//iterando sobre los pixeles obtengo un numero random r y si p<r<t entonces el pixel se mantiene igual,
+	//si no, r<p => pixel=negro, r>t => pixel=blanco 
+	void addSnPNoiseToSimulation(Image* newImage, double p){
+		srand (time(NULL));
+				
+		double thresh = 1 - p;
+		cout << imageMatrix->height << " " << imageMatrix->width << endl;
+		for (int i = 0; i < (imageMatrix->height)*3; ++i)
+		{
+			for (int j = 0; j < (imageMatrix->width)*3; ++j)
+			{
+				double r = (double) rand() / (RAND_MAX);
+				//cout << r << endl;
+				if (r<p){
+					newImage->EditPixelValue(i* imageMatrix->width + j, 55);
+				}
+				else if (thresh<r){
+					newImage->EditPixelValue(i* imageMatrix->width + j, 200);
+				}
+				else{
+					cout << i << ", " << j << endl;
+					newImage->EditPixelValue(i* imageMatrix->width + j, imageMatrix->obtainPixelValue(i* imageMatrix->width + j));
+				}
+				
+			}
+		}
+
+
+	}
+
 	void createTCRay(pair<double,double> pixel1, pair<double,double> pixel2, Rala& distances){
 		//nos aseguramos que el primer pixel tenga un x menor a pixel2
 		//los rayos pueden "ir en sentido contrario" pero para la simulacion los trataremos SIEMPRE
@@ -50,7 +80,7 @@ public:
 
 		Recta recta = Recta(a,b);
 		recta.print();
-
+		
 		if(a > 0){ // si la pendiente es poisitiva
 			for (int i = 0; i <= distances.m; ++i){
 				int j = (int) floor(recta.f(i));
@@ -60,7 +90,6 @@ public:
 				if(k > distances.n ) k = distances.n  ;// esto cuando se va por el techo la recta. 
 
 				for (; j < k; ++j){
-					cout << i << " " << j << endl;
 					insertarElemento(distances, i, j, 1);
 				}
 			}		
@@ -75,7 +104,6 @@ public:
 				//cout << "i: " << i << ", j: " << j << ", k: " << k << endl; 
 				for (; j > k; j--)
 				{
-					cout << i << " " << j-1 << endl;
 					insertarElemento(distances, i, j-1, 1);
 				}
 			}	
@@ -138,6 +166,9 @@ private:
 	bool areInSameEdge(pair<int,int> pixel1, pair<int,int> pixel2){
 		return (pixel1.first == pixel2.first && (pixel1.first == 0 || pixel1.first == getWidth()-1 )) || (pixel1.second == pixel2.second && (pixel1.second = 0 || pixel1.second == getHeight()-1) );
 	}
+	//Properties
+	Image* imageMatrix;
+
 };
 
 #endif

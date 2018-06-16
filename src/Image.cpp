@@ -16,8 +16,6 @@ string obtainPathUntilLastFolder(string path){
 	return path.substr(0,indiceUltimBarra);
 }
 
-Image::Image(){}
-
 Image::Image(std::string newFilePath){
 
 	width = 0, height = 0;
@@ -40,6 +38,10 @@ void Image::aplanateImageArray(uchar* array){
 			array[i * width + j] = obtainPixelValue(i * width + j);
 		}
 	}
+}
+
+void Image::EditPixelValue(unsigned int pixelNumber, uchar value){
+	imageBuffer[pixelNumber] = value;
 }
 
 uchar Image::obtainPixelValue(unsigned int pixelNumber){
