@@ -20,10 +20,12 @@ public:
 
 	//Methods
 	Image(std::string newFilePath);
+	Image(uchar* array);
 	Image();
 	~Image();
 
 	void EditPixelValue(unsigned int pixelNumber, uchar value);
+	void changePixelArray(uchar* array);
 	void SaveImage(std::string newFilePath);
 	uchar obtainPixelValue(unsigned int pixelNumber);
 	void aplanateImageArray(uchar* array);

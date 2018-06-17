@@ -29,8 +29,9 @@ void testNoiser(){
 	
 	TCSimulator Simulator(path);
 	Image* noiseImage = new Image(path);
-	Simulator.addSnPNoiseToSimulation(noiseImage, 0.2);
+	Simulator.addSnPNoiseToSimulation(noiseImage, 0.1);
 	noiseImage->SaveImage("../imgs_TC/tomoConRuido.ppm");
+	delete noiseImage;
 }
 
 void testPendienteNegativa(){

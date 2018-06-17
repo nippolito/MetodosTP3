@@ -42,7 +42,18 @@ public:
 	Image* imageMatrix;
 
 	//Methods
-
+	Image* LoadPixelsIntoImage(vector<char> pixels){
+		uchar* pixelsInRgb = new uchar[pixels.size() * 3]; 
+		//ppm parece que por alguna razon magica tiene 3 bytes por pixel, ergo si queremos transformar un vector de pixels en escala
+		//de grises, habria que agregarlo 3 veces, una vez por cada color(esto da la representacion en rgb de graysacle)
+		for (int i = 0; i < pixels.size(); ++i)
+		{
+			pixelsInRgb[i*3]=pixels[i];
+			pixelsInRgb[i*3+1]=pixels[i];
+			pixelsInRgb[i*3+2]=pixels[i];
+		}
+		return new Image(pixelsInRgb);
+	}
 	//Agregar ruido con distribucion salt & pepper, paso p probabilidad como argumento y defino t = 1-p,
 	//iterando sobre los pixeles obtengo un numero random r y si p<r<t entonces el pixel se mantiene igual,
 	//si no, r<p => pixel=negro, r>t => pixel=blanco 
@@ -50,26 +61,48 @@ public:
 		srand (time(NULL));
 				
 		double thresh = 1 - p;
-		cout << imageMatrix->height << " " << imageMatrix->width << endl;
-		for (int i = 0; i < (imageMatrix->height)*3; ++i)
+		uchar* byteArray = new uchar[newImage->width * newImage->height * 9];
+		for (int i = 0; i < (imageMatrix->height); ++i)
 		{
-			for (int j = 0; j < (imageMatrix->width)*3; ++j)
+			for (int j = 0; j < (imageMatrix->width); ++j)
 			{
 				double r = (double) rand() / (RAND_MAX);
 				//cout << r << endl;
 				if (r<p){
-					newImage->EditPixelValue(i* imageMatrix->width + j, 55);
+					byteArray[i* imageMatrix->width * 3 + j * 3] = 0;
+					byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = 0;
+					byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = 0;
 				}
 				else if (thresh<r){
-					newImage->EditPixelValue(i* imageMatrix->width + j, 200);
+					byteArray[i* imageMatrix->width * 3 + j * 3] = 255;
+					byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = 255;
+					byteArray[i* imageMatrix->width * 3 + j * 3 + 2] = 255;
 				}
 				else{
-					cout << i << ", " << j << endl;
-					newImage->EditPixelValue(i* imageMatrix->width + j, imageMatrix->obtainPixelValue(i* imageMatrix->width + j));
+					byteArray[i* imageMatrix->width * 3 + j * 3] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3);
+					byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3 + 1);
+					byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3+ 2);
+					
 				}
-				
+				// if (p <= r && r <=thresh){
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3);
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3 + 1);
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3+ 2);	
+				// }
+				// else if(byteArray[i* imageMatrix->width * 3 + j * 3] < 122){
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3] = 255;
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = 255;
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3 + 2] = 255;
+				// }
+				// else{
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3] = 0;
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = 0;
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = 0;
+				// }
 			}
 		}
+
+		newImage->changePixelArray(byteArray);
 
 
 	}
