@@ -46,9 +46,60 @@ void Test1ParaMult(){ 	// pasa, todo OK
 	mostrarRala(&C);	
 }
 
+void TestParaAplanar(){ 	// pasa, todo OK
+	Rala A = Rala(4,5);
+	Rala B = Rala(1,20);
+	/*
+	0 0 0 0 0 	
+	0 0 0 0 1 	 
+	0 0 0 1 0 	
+	0 0 1 0 0  
+
+	*/
+
+	insertarElemento(A, 1, 4, 1);
+	insertarElemento(A, 2, 3, 1);
+	insertarElemento(A, 3, 2, 1);
+	
+	mostrarRala(&A);
+
+	cout << endl;
+	cout << endl;
+	cout << "APLANANDO" << endl;
+	cout << endl;
+	cout << endl;
+
+	map<int,double> insert = convertirRayoEnFila(A); 
+	reemplazarFila(B,0,insert);
+
+	mostrarRala(&B);
+	
+}
+
+void TestParaCM(){
+	Rala A = Rala(3,3);
+
+	insertarElemento(A, 0, 0, 1);
+	insertarElemento(A, 1, 1, 1);
+	insertarElemento(A, 2, 2, 1);
+	
+	vector<double> b;
+	b.push_back(4);
+	b.push_back(5);
+	b.push_back(1);
+
+	vector<double> res = resolverCM(A, b);
+
+	for (int i = 0; i < 3; ++i)
+	{
+		cout << res[i] << endl;
+	}
+}
 
 
 int main(){
-	Test1ParaMult();
+	//Test1ParaMult();
+	//TestParaAplanar();
+	TestParaCM();
 	return 1;
 }
