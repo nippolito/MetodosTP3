@@ -60,9 +60,8 @@ void mostrarRala(Rala* matriz){
 
 // inserta elemento en la matriz A.
 void insertarElemento(Rala& A, int fila, int columna, double valor ){
-	
 	//Nuevo: Si se quiere insertar un elemento que excede la longitud de la fila, o cant. de columnas, explota.
-	if(A.m <= columna) { 
+	if(A.m <= columna ||  A.n <= fila) { 
 		cout << "Error de dimensiones. La posicon: (" << fila<< ", " << columna << ")" << " no esta permitida" << endl;
 		return;
 	}
@@ -79,6 +78,7 @@ void insertarElemento(Rala& A, int fila, int columna, double valor ){
 // crea en At la matriz transpuesta de A
 // PRECONDICION: A y At aunque vacias, deben tener las dimensiones correctas.
 void createTranspose(Rala& A, Rala& At){
+	cout<< "CREATE TRASNSPOSE --> " << endl;
 	int n = A.n;
 	for(int i = 0; i < n ; i ++){
 		for(map<int,double>::iterator it = A.conex[i].begin() ; it != (A.conex[i]).end(); it ++){
@@ -90,6 +90,7 @@ void createTranspose(Rala& A, Rala& At){
 // crea matriz identidad necesaria para el cálculo del pageRank
 //Ahora puede ser la identidad no cuadrada
 Rala CrearIdentidad(int n, int m ){
+	cout<< "CREATE IDENTIDAD--> " << endl;
 	Rala res = Rala(n,m);
 	int mayor = max(n,m);
 	for(int i = 0 ; i < mayor; i++){
@@ -104,6 +105,7 @@ Rala CrearIdentidad(int n, int m ){
 
 // suma las matrices A y B y devuelve la suma en C
 void sumaMatricial(Rala& A, Rala& B, Rala& C){
+	cout<< "SUMA MATRICIAL --> " << endl;
 	if(A.n != B.n || A.m != B.m){
 		cout<< "Error de dimensiones al sumar matrices no compatibles!" << endl;
 		return;
@@ -155,31 +157,6 @@ double multiplicarFilas(map<int,double>& fila, map<int,double>& col){
 
 	return ac;
 }
-
-
-
-
-//OLD. USAR NUEVA MultiplicacionMatricial (de matrices no cuadradas)
-
-/*
-// multiplica las matrices A y B. Devuelve la multiplicación en C
-void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
-	int n = A.n;
-	Rala transp = Rala(n);
-	createTranspose(B, transp);
-	for(int i = 0; i < n; i++){
-		for(int j = 0 ; j < n ; j ++){
-			map<int,double> filA = A.conex[i];
-			map<int,double> colB = transp.conex[j];
-			double multRes = multiplicarFilas(filA, colB);
-			if(fabs(multRes) > 0){
-				insertarElemento(C,i,j,multRes);
-			}
-		}
-	}
-}
-*/
-
 
 
 
@@ -303,6 +280,7 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 //A, B: MATRICES A MULTIPLICAR
 //C: MATRIZ RESULTADO DEBE TENER LAS DIMENSIONES CORRECTAS (aunque como es rala, basta con que C.n sea igual que A.n)
 void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
+	cout<< "MULTIPLICACION MATRICIAL --> " << endl;
 	int nA = A.n;
 	if(A.m != B.n || A.n != C.n || B.m != C.m){
 		
@@ -366,131 +344,25 @@ map<int, double> convertirRayoEnFila(Rala& A){
 }
 
 
+
+
 //Resolver CM: AtAx = Atb;
-vector<double> resolverCM(Rala& A, vector<double> b){
+vector<double> resolverCM(Rala& A, vector<double>& b){
 	int n = A.m;
-
 	vector<double> x(n, 0);
-	Rala At = Rala(A.m, A.n);
-	createTranspose(A, At);
-	
 	vector<double> Atb (b.size(), 0);
-	multiplicacionPorVector(At, b, Atb);
-
+	Rala At = Rala(A.m, A.n);
 	Rala AtA = Rala(A.m, A.m);
-	multiplicacionMatricial(At, A, AtA);
 
-	solveLinearEquations(AtA, Atb, x, n);
-	return x;
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//PAGERANK TP1 (EN DESUSO)
-
-// resuelve el PageRank
-// entradas: matriz de conectividad W, vector res para la salida (debe tener size n)
-/*
-void resolverPageRank(Rala& W, vector<double>& res, double p){
-	int n = W.n;
-	Rala WxDxp = Rala(n);
-	Rala MatrizAIgualar = Rala(n);
-	Rala I = CrearIdentidad(n);
-	Rala D  = Rala(n);
-	vector<double> e = generarVectorE(n);	//Creo e 
 	
-	double prob = p * (-1); //uso -p para poder multiplicar directamente y luego usar sumaMatricial.
-
-	generarMatrizDiagonalD(D, W); //Creo D según la matriz de conectividad W
-
-	multiplicacionMatricial(W, D, WxDxp); // WD => WxDxp
-	multiplicacionPorEscalar(WxDxp, prob); // WxDxp = -pWD
-
-	sumaMatricial(I, WxDxp, MatrizAIgualar);		// WxDxp = (I + (-pWD))
-
-	solveLinearEquations(MatrizAIgualar, e, res, n);
-
-
-	// Normalizo el vector
-	double normaUno = 0;
-	for(int i = 0; i < n; i++){
-		normaUno = normaUno + res[i]; 
-	}
-
-	for(int i = 0; i < n; i++){
-		res[i] = res[i] / normaUno;
-	}	
+	createTranspose(A, At);
+	multiplicacionPorVector(At, b, Atb);
+	multiplicacionMatricial(At, A, AtA);
+	solveLinearEquations(AtA, Atb, x, n);
+	
+	return x;
 }
-*/
 
 
-//EN DESUSO
-/*
-// genera el vector e que es necesario para el cálculo del pageRank
-vector<double> generarVectorE(int n){
-	vector <double> result(n, 1.0);
-	return result;
-}
-*/
-
-
-//EN DESUSO
-/*
-// A tiene que ser matriz nula. W matriz de conectividad.
-// Devuelve la diagonal en A
-int generarMatrizDiagonalD(Rala & A, Rala & W){
-	if (A.n != W.n){ return -1;}
-	int n = W.n;
-
-		for (int fila = 0; fila < n; ++fila)
-		{
-			int grado = gradoSalida(W, fila);
-			if(grado != 0){
-				
-				double valor = 1.0/grado;
-				insertarElemento(A, fila, fila, valor);
-			}
-
-		}
-
-		return 1;	
-}
-*/
-
-
-
-//EN DESUSO
-/*
-// devuelve el grado de la página j (o sea, la cantidad de elems en la columna j, o #linksSalientes)
-int gradoSalida(struct Rala& A, int j){
-	int res = 0;
-	int n = A.n;
-	for(int i = 0; i < n; i++){
-		if( A.conex[i].find(j) != A.conex[i].end()){
-			res++;
-		}
-	}
-	return res;
-}
-*/
 
 #endif

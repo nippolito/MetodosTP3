@@ -39,6 +39,8 @@ class TCSimulator
 public:
 	//Properties
 	Image* imageMatrix;
+	vector<Rala> rayos;
+	vector<double> tiempos;
 
 
 	//Methods
@@ -53,18 +55,20 @@ public:
 		double b = pixel1.second - a * pixel1.first;
 
 		Recta recta = Recta(a,b);
-		recta.print();
+		//recta.print();
 
 		if(a > 0){ // si la pendiente es poisitiva
-			for (int i = 0; i <= distances.m; ++i){
+			for (int i = 0; i < distances.m; ++i){
 				int j = (int) floor(recta.f(i));
 				if(j < 0) j = 0 ; // esto para cuando la recta empieza desde el piso
+				if(j>distances.n) j = distances.n;
+
 				double k = recta.f(i+1); // esta bien que este no sea un entero aviso
 				if(k < 0) k = 0; // esto cuando no pasa por ninguna de las dos columnas
-				if(k > distances.n ) k = distances.n  ;// esto cuando se va por el techo la recta. 
+				if(k > distances.n ) k = distances.n ;// esto cuando se va por el techo la recta. 
 
-				for (; j < k; ++j){
-					cout << i << " " << j << endl;
+				for (; j < k; j++){
+					//cout << i << " " << j << endl;
 					insertarElemento(distances,j, i,  1);
 				}
 			}		
@@ -73,15 +77,17 @@ public:
 			for (int i = 0; i < distances.m; ++i){
 				int j = (int) ceil(recta.f(i));
 				if(j > distances.n) j = distances.n ; // esto para cuando la recta empieza desde el techo
+				if(j < 0) j = 0;
+
 				double k = recta.f(i+1); 
 				if(k > distances.n) k = distances.n; // esto cuando no pasa por ninguna de las dos columnas
 				if(k < 0) k = 0; // esto cuando se va por el piso la recta
-				//cout << "i: " << i << ", j: " << j << ", k: " << k << endl; 
+
 				for (; j > k; j--)
 				{
-					cout << i << " " << j-1 << endl;
 					insertarElemento(distances, j-1, i , 1);
 				}
+				//cout << "\n" << endl;
 			}	
 		}
 		else{
@@ -115,11 +121,66 @@ public:
 		int n = distances.n;
 		int m = distances.m;
 		for(int i = 0 ; i < n ; i ++){
-			for(int j = 0 ; j < m; j ++){
-				tiempo += distances.conex[i][j] * (imageMatrix->imageBuffer[i*m*3 + j + green] + imageMatrix->imageBuffer[i*m*3 + j + red] + imageMatrix->imageBuffer[i*m*3 + j + blue]) / 3;
+			for (int j = 0; j < m; ++j){
+				map<int,double>::iterator it = distances.conex[i].find(j);
+				if( it != distances.conex[i].end() ){
+					tiempo += (imageMatrix->imageBuffer[i*m*3 + j + green] + imageMatrix->imageBuffer[i*m*3 + j + red] + imageMatrix->imageBuffer[i*m*3 + j + blue]) / 3;
+				}
 			}
 		}
 		return tiempo;
+	}
+
+	void generarRayos(int cantRayos, vector<pair<pair<double,double>, pair<double,double> > > pixelesPorDondePasar){
+		int cantRayosDefinidos = pixelesPorDondePasar.size();
+		int cantRayosRandom = cantRayos - cantRayosDefinidos; 
+		tiempos = std::vector<double> ();
+
+		for(int i = 0 ; i < cantRayosDefinidos; i++){
+			rayos.push_back(Rala(getHeight(), getWidth()));
+			pair<double,double> pixel1 = pixelesPorDondePasar[i].first;
+			pair<double,double> pixel2 = pixelesPorDondePasar[i].second;
+			createTCRay(pixel1, pixel2, rayos[i]);
+
+			tiempos.push_back(tiempoDeRecorrido(rayos[i]));
+		}
+
+		for(int i = 0 ; i < cantRayosRandom; i++){
+			rayos.push_back(Rala(getHeight(), getWidth()));
+			pair<double,double> pixel1;
+			pair<double,double> pixel2;
+			createTwoRandomPoints(getHeight(), getWidth(), pixel1, pixel2);
+			createTCRay(pixel1, pixel2, rayos[i]);
+
+			tiempos.push_back(tiempoDeRecorrido(rayos[i]));
+		}
+	}
+
+		Image* regenerarImagen(){
+		int n = rayos.size();
+		Rala A (n, getWidth()*getHeight());
+		for(int i = 0 ; i < n ; i ++){
+			reemplazarFila(A, i, convertirRayoEnFila(rayos[i]));
+		}
+		cout<< "BK1 " << endl;
+		vector<double> imagenAplanada =  resolverCM(A, tiempos);
+		cout<< "BK2 " << endl;
+		Image* res = new Image();
+		res->height = imageMatrix->height;
+		res->width = imageMatrix->width;
+		cout<< "BK3 " << endl;
+		uchar* newBuffer = new uchar[res->height*res->width*3];
+		cout<< "BK4 " << endl;
+		for(int fila = 0; fila  < res->height; fila++){
+			for(int col = 0; col < res->width; col++){
+				newBuffer[fila*col*3+green] = imagenAplanada[fila*col];
+				newBuffer[fila*col*3+red] = imagenAplanada[fila*col];
+				newBuffer[fila*col*3+blue] = imagenAplanada[fila*col];
+			}
+		}
+		cout<< "BK5 " << endl;
+		res->imageBuffer = newBuffer;
+		return res;
 	}
 
 
@@ -143,8 +204,8 @@ public:
 		pixel2.first = x2;
 		pixel2.second = y2;
 
-		cout << "pixel1: " << x1 << ", " << y1 << endl;
-		cout << "pixel2: " << x2 << ", " << y2 << endl;
+		//cout << "pixel1: " << x1 << ", " << y1 << endl;
+		//cout << "pixel2: " << x2 << ", " << y2 << endl;
 	}
 		
 private:
