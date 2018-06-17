@@ -288,7 +288,7 @@ void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 		return;
 	}
 
-	Rala transp = Rala(A.m, A.n);
+	Rala transp = Rala(B.m, B.n);
 	createTranspose(B, transp);
 
 	//Ahora transp tiene:
@@ -356,10 +356,13 @@ vector<double> resolverCM(Rala& A, vector<double>& b){
 
 	
 	createTranspose(A, At);
+	cout <<"bk1" << endl;
 	multiplicacionPorVector(At, b, Atb);
+	cout <<"bk2" << endl;
 	multiplicacionMatricial(At, A, AtA);
+	cout <<"bk3" << endl;
 	solveLinearEquations(AtA, Atb, x, n);
-	
+	cout <<"bk4" << endl;
 	return x;
 }
 

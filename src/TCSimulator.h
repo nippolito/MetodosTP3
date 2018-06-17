@@ -162,15 +162,11 @@ public:
 		for(int i = 0 ; i < n ; i ++){
 			reemplazarFila(A, i, convertirRayoEnFila(rayos[i]));
 		}
-		cout<< "BK1 " << endl;
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
-		cout<< "BK2 " << endl;
 		Image* res = new Image();
 		res->height = imageMatrix->height;
 		res->width = imageMatrix->width;
-		cout<< "BK3 " << endl;
 		uchar* newBuffer = new uchar[res->height*res->width*3];
-		cout<< "BK4 " << endl;
 		for(int fila = 0; fila  < res->height; fila++){
 			for(int col = 0; col < res->width; col++){
 				newBuffer[fila*col*3+green] = imagenAplanada[fila*col];
@@ -178,7 +174,6 @@ public:
 				newBuffer[fila*col*3+blue] = imagenAplanada[fila*col];
 			}
 		}
-		cout<< "BK5 " << endl;
 		res->imageBuffer = newBuffer;
 		return res;
 	}
