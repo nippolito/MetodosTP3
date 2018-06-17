@@ -47,6 +47,10 @@ void Image::changePixelArray(uchar* array){
 	imageBuffer = array;
 }
 
+Image::Image(){
+	
+}
+
 void Image::aplanateImageArray(uchar* array){
 	for (int i = 0; i < height; ++i)
 	{

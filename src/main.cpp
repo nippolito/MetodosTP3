@@ -106,11 +106,11 @@ void pruebaImagenes(){
 
 
 int main(){
-	testNoiser();
-	
+	//testNoiser();
+
 	//testReal();
 	//testJuguete();
-	pruebaImagenes();
+	//pruebaImagenes();
 	pruebaCasoReal();
 
 	return 0;
