@@ -37,13 +37,78 @@ struct Recta{
 class TCSimulator
 {
 public:
+	
 	//Properties
 	Image* imageMatrix;
 	vector<Rala> rayos;
 	vector<double> tiempos;
 
-
 	//Methods
+	Image* LoadPixelsIntoImage(vector<char> pixels){
+		uchar* pixelsInRgb = new uchar[pixels.size() * 3]; 
+		//ppm parece que por alguna razon magica tiene 3 bytes por pixel, ergo si queremos transformar un vector de pixels en escala
+		//de grises, habria que agregarlo 3 veces, una vez por cada color(esto da la representacion en rgb de graysacle)
+		for (int i = 0; i < pixels.size(); ++i)
+		{
+			pixelsInRgb[i*3]=pixels[i];
+			pixelsInRgb[i*3+1]=pixels[i];
+			pixelsInRgb[i*3+2]=pixels[i];
+		}
+		return new Image(pixelsInRgb);
+	}
+	//Agregar ruido con distribucion salt & pepper, paso p probabilidad como argumento y defino t = 1-p,
+	//iterando sobre los pixeles obtengo un numero random r y si p<r<t entonces el pixel se mantiene igual,
+	//si no, r<p => pixel=negro, r>t => pixel=blanco 
+	void addSnPNoiseToSimulation(Image* newImage, double p){
+		srand (time(NULL));
+				
+		double thresh = 1 - p;
+		uchar* byteArray = new uchar[newImage->width * newImage->height * 9];
+		for (int i = 0; i < (imageMatrix->height); ++i)
+		{
+			for (int j = 0; j < (imageMatrix->width); ++j)
+			{
+				double r = (double) rand() / (RAND_MAX);
+				//cout << r << endl;
+				if (r<p){
+					byteArray[i* imageMatrix->width * 3 + j * 3] = 0;
+					byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = 0;
+					byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = 0;
+				}
+				else if (thresh<r){
+					byteArray[i* imageMatrix->width * 3 + j * 3] = 255;
+					byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = 255;
+					byteArray[i* imageMatrix->width * 3 + j * 3 + 2] = 255;
+				}
+				else{
+					byteArray[i* imageMatrix->width * 3 + j * 3] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3);
+					byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3 + 1);
+					byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3+ 2);
+					
+				}
+				// if (p <= r && r <=thresh){
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3);
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3 + 1);
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3+ 2);	
+				// }
+				// else if(byteArray[i* imageMatrix->width * 3 + j * 3] < 122){
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3] = 255;
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = 255;
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3 + 2] = 255;
+				// }
+				// else{
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3] = 0;
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = 0;
+				// 	byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = 0;
+				// }
+			}
+		}
+
+		newImage->changePixelArray(byteArray);
+
+
+	}
+
 	//pixel 1 siempre a izquierda del pixel 2
 	void createTCRay(pair<double,double> pixel1, pair<double,double> pixel2, Rala& distances){
 		//nos aseguramos que el primer pixel tenga un x menor a pixel2
@@ -55,8 +120,8 @@ public:
 		double b = pixel1.second - a * pixel1.first;
 
 		Recta recta = Recta(a,b);
-		//recta.print();
-
+		recta.print();
+		
 		if(a > 0){ // si la pendiente es poisitiva
 			for (int i = 0; i < distances.m; ++i){
 				int j = (int) floor(recta.f(i));
@@ -213,6 +278,7 @@ private:
 	bool areInSameEdge(pair<int,int> pixel1, pair<int,int> pixel2){
 		return (pixel1.first == pixel2.first && (pixel1.first == 0 || pixel1.first == getWidth()-1 )) || (pixel1.second == pixel2.second && (pixel1.second = 0 || pixel1.second == getHeight()-1) );
 	}
+	
 };
 
 #endif
