@@ -279,7 +279,7 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 
 //A, B: MATRICES A MULTIPLICAR
 //C: MATRIZ RESULTADO DEBE TENER LAS DIMENSIONES CORRECTAS (aunque como es rala, basta con que C.n sea igual que A.n)
-void git bmultiplicacionMatricial(Rala& A, Rala& B, Rala& C){
+void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 	cout<< "MULTIPLICACION MATRICIAL --> " << endl;
 	int nA = A.n;
 	if(A.m != B.n || A.n != C.n || B.m != C.m){
