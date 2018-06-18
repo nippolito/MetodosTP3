@@ -25,7 +25,7 @@ struct Recta{
 		b = b2;
 	}
 
-	double f(int x){
+	double f(double x){
 		return a*x + b;
 	}
 
@@ -156,11 +156,12 @@ public:
 		}
 	}
 
-		Image* regenerarImagen(){
+	Image* regenerarImagen(){
 		int n = rayos.size();
-		Rala A (n, getWidth()*getHeight());
+		Rala A = Rala(n, getWidth()*getHeight());
+		A.conex = vector< map<int, double> >();
 		for(int i = 0 ; i < n ; i ++){
-			reemplazarFila(A, i, convertirRayoEnFila(rayos[i]));
+			A.conex.push_back(convertirRayoEnFila(rayos[i]));
 		}
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
 		Image* res = new Image();
@@ -183,11 +184,12 @@ public:
 	//ACLARACION: siempre pixel1 esta a la izquierda de pixel2
 	void createTwoRandomPoints(int n, int m, pair<double,double>& pixel1, pair<double,double>& pixel2){
 		srand (time(NULL));
-		double x1 = rand() % m;
-		double x2 = rand() % m;
+		long max_rand = 1000000L;
+		double x1 = 0 + (double)m * (rand() % max_rand) / max_rand;
+		double x2 = 0 + (double)m * (rand() % max_rand) / max_rand;;
 
-		double y1 = rand() % n;
-		double y2 = rand() % n;
+		double y1 = (double)n * (rand() % max_rand) / max_rand;
+		double y2 = (double)n * (rand() % max_rand) / max_rand;
 
 		if (x1 > x2) {
 			swap(x1,x2);

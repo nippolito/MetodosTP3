@@ -178,7 +178,7 @@ void multiplicacionPorVector(Rala& A, vector<double>& vecArg, vector<double>& ve
 		map<int,double>::iterator itRow = A.conex[i].begin();
 		double sumaFilaColumna = 0.0;
 		for (; itRow != A.conex[i].end() ; itRow++)
-		{
+		{	
 			sumaFilaColumna += itRow->second * vecArg[itRow->first];
 		}
 		vecRes[i] = sumaFilaColumna;
@@ -279,7 +279,7 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 
 //A, B: MATRICES A MULTIPLICAR
 //C: MATRIZ RESULTADO DEBE TENER LAS DIMENSIONES CORRECTAS (aunque como es rala, basta con que C.n sea igual que A.n)
-void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
+void git bmultiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 	cout<< "MULTIPLICACION MATRICIAL --> " << endl;
 	int nA = A.n;
 	if(A.m != B.n || A.n != C.n || B.m != C.m){
@@ -312,7 +312,7 @@ void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 //Dado que al crear una matriz rala, esta no esta "vacia" sino que posee un map por cada fila vacio,
 //"Añadir filas" no es mas que reemplazar la fila existente por otra que se desea crear. 
 //Usar este metodo para contruir y luego rellenar la matriz A solucion final.
-void reemplazarFila(Rala& A,int posicion, map<int,double> fila){
+void reemplazarFila(Rala& A,int posicion, map<int,double>& fila){
 	A.conex[posicion] = fila;
 }
 
@@ -327,16 +327,11 @@ map<int, double> convertirRayoEnFila(Rala& A){
 	int nfilas = A.n;
 	int mcolumnas = A.m;
 
-	for (int i = 0; i < nfilas; ++i)
+	for (int i = 0; i < nfilas; i++)
 	{
-		for (int j = 0; j < mcolumnas; ++j)
-		{
-			map<int,double>::iterator it = A.conex[i].find(j);
-			if( it != A.conex[i].end() ){
-				res.insert(pair<int,double>(numeroDePixel, 1));
-			}
-
-			numeroDePixel++;
+		map<int,double>::iterator it = A.conex[i].begin();
+		for(; it != A.conex[i].end(); it++){
+			res.insert(pair<int,double>(it->first, 1));
 		}
 	}
 
@@ -350,9 +345,9 @@ map<int, double> convertirRayoEnFila(Rala& A){
 vector<double> resolverCM(Rala& A, vector<double>& b){
 	int n = A.m;
 	vector<double> x(n, 0);
-	vector<double> Atb (b.size(), 0);
-	Rala At = Rala(A.m, A.n);
-	Rala AtA = Rala(A.m, A.m);
+	vector<double> Atb (A.m, 0);
+	Rala At(A.m, A.n);
+	Rala AtA(A.m, A.m);
 
 	
 	createTranspose(A, At);

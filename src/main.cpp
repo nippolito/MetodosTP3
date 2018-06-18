@@ -78,7 +78,7 @@ void pruebaVerCuantoImitarImagenSePuede(TCSimulator& Simulator){
 void pruebaCasoReal(){
 	string path = "../imgs_TC/tomo2.ppm";
 	TCSimulator Simulator(path);
-	int cantRayos = 200;
+	int cantRayos = 50;
 	Simulator.generarRayos(cantRayos, vector<pair<pair<double,double>, pair<double,double> > > ());
 	Image* imagenReconstruida = Simulator.regenerarImagen();
 	//imagenReconstruida->SaveImage("../imgs_TC/imagenReconstruida.ppm");
