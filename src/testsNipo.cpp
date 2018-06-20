@@ -243,8 +243,7 @@ vector<pair<pair<double,double>, pair<double,double> > > generadorRayosPuntoFijo
 	return res;
 }
 
-// funciona sólo para imágenes cuadradas, por eso solo hay que pasarle el n
-vector<pair<pair<double,double>, pair<double,double> > > generadorRayosCruzados(int n, int k){
+vector<pair<pair<double,double>, pair<double,double> > > generadorRayosCruzados(int m, int n, int k){
 	pair<double, double> punto1;
 	pair<double, double> punto2;
 	pair<pair<double, double>, pair<double, double> > pixel1;
@@ -252,13 +251,13 @@ vector<pair<pair<double,double>, pair<double,double> > > generadorRayosCruzados(
 
 	// arranco por los cruzados de izquierda hacia arriba
 	punto1.first = 0;
-	punto2.second = n;
-	double valor1 = (double) k * n / (k + 1);
+	punto2.second = m;
+	double valor1 = (double) k * m / (k + 1);
 	double valor2 = (double) n / (k + 1);
 	for(int i = 0; i < k; i++){
 		punto1.second = valor1;
 		punto2.first = valor2;
-		valor1 -= (double) n / (k+1);
+		valor1 -= (double) m / (k+1);
 		valor2 += (double) n / (k+1);
 
 		pixel1.first = punto1;
@@ -270,12 +269,12 @@ vector<pair<pair<double,double>, pair<double,double> > > generadorRayosCruzados(
 	punto1.second = 0;
 	punto2.first = n;
 	valor1 = (double) n / (k + 1);
-	valor2 = (double) k * n / (k+1);
+	valor2 = (double) k * m / (k+1);
 	for(int i = 0; i < k; i++){
 		punto1.first = valor1;
 		punto2.second = valor2;
 		valor1 += (double) n / (k+1);
-		valor2 -= (double) n / (k+1);
+		valor2 -= (double) m / (k+1);
 
 		pixel1.first = punto1;
 		pixel1.second = punto2;
@@ -285,8 +284,7 @@ vector<pair<pair<double,double>, pair<double,double> > > generadorRayosCruzados(
 	return res;
 }
 
-// funciona sólo para imágenes cuadradas, por eso solo hay que pasarle el n
-vector<pair<pair<double,double>, pair<double,double> > > generadorRayosOpuestos(int n, int k){
+vector<pair<pair<double,double>, pair<double,double> > > generadorRayosOpuestos(int m, int n, int k){
 	pair<double, double> punto1;
 	pair<double, double> punto2;
 	pair<double, double> punto3;
@@ -300,18 +298,20 @@ vector<pair<pair<double,double>, pair<double,double> > > generadorRayosOpuestos(
 	punto3.second = 0;
 	punto4.second = n;
 
-	double valor1 = (double) k * n / (k + 1);
-	double valor2 = (double) n / (k + 1);
+	double valor1 = (double) k * m / (k + 1);
+	double valor2 = (double) m / (k + 1);
 	double valor3 = (double) n / (k + 1);
 	double valor4 = (double) k * n / (k + 1);
 
 	for(int i = 0; i < k; i++){
 		punto1.second = valor1;
 		punto2.second = valor2;
-		punto3.first = valor2;
-		punto4.first = valor1;
-		valor1 -= (double) n / (k+1);
-		valor2 += (double) n / (k+1);
+		punto3.first = valor3;
+		punto4.first = valor4;
+		valor1 -= (double) m / (k+1);
+		valor2 += (double) m / (k+1);
+		valor3 += (double) n / (k+1);
+		valor4 -= (double) n / (k+1);
 
 		pixel1.first = punto1;
 		pixel1.second = punto2;
@@ -350,10 +350,10 @@ int main(){
 	// vector<pair<pair<double, double>, pair<double, double> > > carlos = generadorRayosPuntoFijo(5, 5, 5, 0);
 	// mostrarVectorPairPairDoubleNipo(carlos);
 	// cout << carlos.size() << endl;
-	// vector<pair<pair<double, double>, pair<double, double> > > cruzados = generadorRayosCruzados(5, 4);
+	// vector<pair<pair<double, double>, pair<double, double> > > cruzados = generadorRayosCruzados(10, 5, 4);
 	// mostrarVectorPairPairDoubleNipo(cruzados);
-	// vector<pair<pair<double, double>, pair<double, double> > > opuestos = generadorRayosOpuestos(5, 4);
-	// mostrarVectorPairPairDoubleNipo(opuestos);
+	vector<pair<pair<double, double>, pair<double, double> > > opuestos = generadorRayosOpuestos(10, 5, 4);
+	mostrarVectorPairPairDoubleNipo(opuestos);
 	// cout << fRand(0.5, 5.3) << endl;
 	return 0;
 }
