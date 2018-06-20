@@ -284,6 +284,7 @@ vector<pair<pair<double,double>, pair<double,double> > > generadorRayosCruzados(
 	return res;
 }
 
+// es necesario que k siempre sea par porque sino te quedan dos rayos que son rectas constantes
 vector<pair<pair<double,double>, pair<double,double> > > generadorRayosOpuestos(int m, int n, int k){
 	pair<double, double> punto1;
 	pair<double, double> punto2;
@@ -345,6 +346,175 @@ void testsECM(){
 	// debe coutear 4/3. funciona OK parece
 }
 
+// hace el generador de rayos opuestos variando el porcentaje de rayos desde 5 hasta kMax, fijando tres p de ruido. Todo con las 3 tomografías de la cátedra. Compara ECM
+// para elegir la cantidad k de rayos tomo el porcentaje de rayos que quiero según el máximo entre el alto y el ancho
+// FALTA PONERLE CHRONO TAMBIÉN PARA TOMAR TIEMPO Y VER QUÉ ONDA LA DISCRETIZACIÓN Y SI SÓLO ME QUEDO CON TOMO1
+void testRayosOpuestosTomosCatedra(int kMax){
+	fstream sal1("tests_nipo/opuestosTomo1.csv", ios::out);
+	fstream sal2("tests_nipo/opuestosTomo2.csv", ios::out);
+	fstream sal3("tests_nipo/opuestosTomo3.csv", ios::out);
+
+	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	sal2 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	sal3 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+
+	string path1 = "imgs_TC/tomo.ppm";
+	string path2 = "imgs_TC/tomo2.ppm";
+	string path3 = "imgs_TC/tomo3.ppm";
+
+	TCSimulator Simulator1(path1);
+	TCSimulator Simulator2(path2);
+	TCSimulator Simulator3(path3);
+
+	for(int i = 5; i < kMax; i = i + 5){
+		cout << "Voy por porcentaje = " << i << endl;
+
+		int dimMax1 = max(Simulator1.getHeight(), Simulator1.getWidth());
+		int k1 = round((double) dimMax1 * kMax / 100);
+		// me aseguro que k1 siempre sea par para no tener las rectas constantes
+		if(k1 % 2 == 1) k1++;
+
+		int dimMax2 = max(Simulator2.getHeight(), Simulator2.getWidth());
+		int k2 = round((double) dimMax2 * kMax / 100);
+		// me aseguro que k2 siempre sea par para no tener las rectas constantes
+		if(k2 % 2 == 1) k2++;
+
+		int dimMax3 = max(Simulator3.getHeight(), Simulator3.getWidth());
+		int k3 = round((double) dimMax3 * kMax / 100);
+		// me aseguro que k3 siempre sea par para no tener las rectas constantes
+		if(k3 % 2 == 1) k3++;
+
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosOpuestos(Simulator1.getHeight(), Simulator1.getWidth(), k1);
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo2 = generadorRayosOpuestos(Simulator2.getHeight(), Simulator2.getWidth(), k2);
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo3 = generadorRayosOpuestos(Simulator3.getHeight(), Simulator3.getWidth(), k3);
+
+		for(int j = 0; j < 10; j++){
+			// lo hago 10 veces para tomar promedio de tiempos
+
+			// acá llamo a función de Emi resultora de todo
+
+			// acá llamo a ECM comparando el vector original con el vector resultado. Faltaría discretizar también el vector original, y ver qué onda la discretización
+
+			// sal1 << Simulator1.getHeight() << "," << Simulator1.getWidth() << "," << i << "," << ecm1 << "," << tiempo1 << endl;
+			// sal2 << Simulator2.getHeight() << "," << Simulator2.getWidth() << "," << i << "," << ecm2 << "," << tiempo2 << endl;
+			// sal3 << Simulator3.getHeight() << "," << Simulator3.getWidth() << "," << i << "," << ecm3 << "," << tiempo3 << endl;
+		}
+	}
+
+	sal1.close();
+	sal2.close();
+	sal3.close();
+}
+
+// hace el generador de rayos cruzados variando el porcentaje de rayos desde 5 hasta kMax, fijando tres p de ruido. Todo con las 3 tomografías de la cátedra. Compara ECM
+// para elegir la cantidad k de rayos tomo el porcentaje de rayos que quiero según el máximo entre el alto y el ancho
+// FALTA PONERLE CHRONO TAMBIÉN PARA TOMAR TIEMPO Y VER QUÉ ONDA LA DISCRETIZACIÓN Y SI SÓLO ME QUEDO CON TOMO1
+void testRayosCruzadosTomosCatedra(int kMax){
+	fstream sal1("tests_nipo/cruzadosTomo1.csv", ios::out);
+	fstream sal2("tests_nipo/cruzadosTomo2.csv", ios::out);
+	fstream sal3("tests_nipo/cruzadosTomo3.csv", ios::out);
+
+	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	sal2 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	sal3 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+
+	string path1 = "imgs_TC/tomo.ppm";
+	string path2 = "imgs_TC/tomo2.ppm";
+	string path3 = "imgs_TC/tomo3.ppm";
+
+	TCSimulator Simulator1(path1);
+	TCSimulator Simulator2(path2);
+	TCSimulator Simulator3(path3);
+
+	for(int i = 5; i < kMax; i = i + 5){
+		cout << "Voy por porcentaje = " << i << endl;
+
+		int dimMax1 = max(Simulator1.getHeight(), Simulator1.getWidth());
+		int k1 = round((double) dimMax1 * kMax / 100);
+
+		int dimMax2 = max(Simulator2.getHeight(), Simulator2.getWidth());
+		int k2 = round((double) dimMax2 * kMax / 100);
+
+		int dimMax3 = max(Simulator3.getHeight(), Simulator3.getWidth());
+		int k3 = round((double) dimMax3 * kMax / 100);
+
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosCruzados(Simulator1.getHeight(), Simulator1.getWidth(), k1);
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo2 = generadorRayosCruzados(Simulator2.getHeight(), Simulator2.getWidth(), k2);
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo3 = generadorRayosCruzados(Simulator3.getHeight(), Simulator3.getWidth(), k3);
+
+		for(int j = 0; j < 10; j++){
+			// lo hago 10 veces para tomar promedio de tiempos
+
+			// acá llamo a función de Emi resultora de todo
+
+			// acá llamo a ECM comparando el vector original con el vector resultado. Faltaría discretizar también el vector original, y ver qué onda la discretización
+
+			// sal1 << Simulator1.getHeight() << "," << Simulator1.getWidth() << "," << i << "," << ecm1 << "," << tiempo1 << endl;
+			// sal2 << Simulator2.getHeight() << "," << Simulator2.getWidth() << "," << i << "," << ecm2 << "," << tiempo2 << endl;
+			// sal3 << Simulator3.getHeight() << "," << Simulator3.getWidth() << "," << i << "," << ecm3 << "," << tiempo3 << endl;
+		}
+	}
+
+	sal1.close();
+	sal2.close();
+	sal3.close();
+}
+
+// hace el generador de rayos cruzados variando el porcentaje de rayos desde 5 hasta kMax, fijando tres p de ruido. Todo con las 3 tomografías de la cátedra. Compara ECM
+// para elegir la cantidad k de rayos tomo el porcentaje de rayos que quiero según el máximo entre el alto y el ancho
+// FALTA PONERLE CHRONO TAMBIÉN PARA TOMAR TIEMPO Y VER QUÉ ONDA LA DISCRETIZACIÓN Y SI SÓLO ME QUEDO CON TOMO1
+void testRayosFijosTomosCatedra(int kMax){
+	fstream sal1("tests_nipo/fijosTomo1.csv", ios::out);
+	fstream sal2("tests_nipo/fijosTomo2.csv", ios::out);
+	fstream sal3("tests_nipo/fijosTomo3.csv", ios::out);
+
+	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	sal2 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	sal3 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+
+	string path1 = "imgs_TC/tomo.ppm";
+	string path2 = "imgs_TC/tomo2.ppm";
+	string path3 = "imgs_TC/tomo3.ppm";
+
+	TCSimulator Simulator1(path1);
+	TCSimulator Simulator2(path2);
+	TCSimulator Simulator3(path3);
+
+	for(int i = 5; i < kMax; i = i + 5){
+		cout << "Voy por porcentaje = " << i << endl;
+
+		int dimMax1 = max(Simulator1.getHeight(), Simulator1.getWidth());
+		int k1 = round((double) dimMax1 * kMax / 100);
+
+		int dimMax2 = max(Simulator2.getHeight(), Simulator2.getWidth());
+		int k2 = round((double) dimMax2 * kMax / 100);
+
+		int dimMax3 = max(Simulator3.getHeight(), Simulator3.getWidth());
+		int k3 = round((double) dimMax3 * kMax / 100);
+
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosPuntoFijo(Simulator1.getHeight(), Simulator1.getWidth(), k1, 0);
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo2 = generadorRayosPuntoFijo(Simulator2.getHeight(), Simulator2.getWidth(), k2, 0);
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo3 = generadorRayosPuntoFijo(Simulator3.getHeight(), Simulator3.getWidth(), k3, 0);
+
+		for(int j = 0; j < 10; j++){
+			// lo hago 10 veces para tomar promedio de tiempos
+
+			// acá llamo a función de Emi resultora de todo
+
+			// acá llamo a ECM comparando el vector original con el vector resultado. Faltaría discretizar también el vector original, y ver qué onda la discretización
+
+			// sal1 << Simulator1.getHeight() << "," << Simulator1.getWidth() << "," << i << "," << ecm1 << "," << tiempo1 << endl;
+			// sal2 << Simulator2.getHeight() << "," << Simulator2.getWidth() << "," << i << "," << ecm2 << "," << tiempo2 << endl;
+			// sal3 << Simulator3.getHeight() << "," << Simulator3.getWidth() << "," << i << "," << ecm3 << "," << tiempo3 << endl;
+		}
+	}
+
+	sal1.close();
+	sal2.close();
+	sal3.close();
+}
+
+
 int main(){
 	srand(time(NULL));
 	// vector<pair<pair<double, double>, pair<double, double> > > carlos = generadorRayosPuntoFijo(5, 5, 5, 0);
@@ -352,8 +522,8 @@ int main(){
 	// cout << carlos.size() << endl;
 	// vector<pair<pair<double, double>, pair<double, double> > > cruzados = generadorRayosCruzados(10, 5, 4);
 	// mostrarVectorPairPairDoubleNipo(cruzados);
-	vector<pair<pair<double, double>, pair<double, double> > > opuestos = generadorRayosOpuestos(10, 5, 4);
-	mostrarVectorPairPairDoubleNipo(opuestos);
+	// vector<pair<pair<double, double>, pair<double, double> > > opuestos = generadorRayosOpuestos(10, 5, 4);
+	// mostrarVectorPairPairDoubleNipo(opuestos);
 	// cout << fRand(0.5, 5.3) << endl;
 	return 0;
 }
