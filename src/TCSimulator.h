@@ -120,7 +120,7 @@ public:
 		double b = pixel1.second - a * pixel1.first;
 
 		Recta recta = Recta(a,b);
-		recta.print();
+		//recta.print();
 		
 		if(a > 0){ // si la pendiente es poisitiva
 			for (int i = 0; i < distances.m; ++i){

@@ -32,6 +32,14 @@ public:
 
 //--------------------------------------------------------FUNCIONES PARA MOSTRAR MATRICES
 
+void mostrarVector(vector<double> x){
+	cout << "[";
+	for(int k = 0 ; k < x.size(); k++){
+		cout << x[k] << ", " ;
+	}
+	cout << "]" << endl;
+}
+
 void mostrarVectorPair(map<int,double>* filas, int m){
 	// cout << "longitud de vec: " << vec.size() << endl;
 	cout << "[";
@@ -185,7 +193,10 @@ void multiplicacionPorVector(Rala& A, vector<double>& vecArg, vector<double>& ve
 	}
 }
 
+
+
 void reduceRowFromPivot(map<int,double>& row, map<int,double>& pivot, int fila, int col, int n, vector<double> & conjunta){
+	
 	map<int,double>::iterator itPivot = pivot.find(col);
 	map<int,double>::iterator itRow = row.find(col);
 	double pivotBase = itPivot->second;
@@ -242,25 +253,62 @@ void reduceRowFromPivot(map<int,double>& row, map<int,double>& pivot, int fila, 
 	}
 }
 
+int primeraFilaSinUnCeroEnLaCol(Rala& A, int col){
+	int n = A.n;
+	for(int i = 0 ; i < n; i ++ ){
+		if(A.conex[i].begin()->first == col){
+			return i ;
+		}
+	}
+	return -1 ;
+}
+
+void swapearPivotConCol(Rala& A, vector<double> & conjunta, int pivot, int col){
+	map<int,double> filaCol = A.conex[col];
+	A.conex[col] = A.conex[pivot];
+	A.conex[pivot] = filaCol;
+
+	double conjCol = conjunta[col];
+	conjunta[col]=conjunta[pivot];
+	conjunta[pivot]=conjCol;
+}
+
 void eliminacionGaussiana(Rala & A, vector<double> & conjunta){
+	cout << "ELIMINACINO GAUSSIANA -->" << endl;
 	int n = A.n ;
 	long long int entra = 0;
 	long long int noentra = 0;
-	for(int col = 0  ; col < n ; col ++){	
-		map<int,double> pivot = A.conex[col];
+	for(int col = 0  ; col < n ; col ++){
+		int filaPivot = primeraFilaSinUnCeroEnLaCol(A,col);
+		//si la columna no son todos ceros entonces...
+		if(filaPivot != -1){
+			swapearPivotConCol(A,conjunta, filaPivot,col);  //pongo una col con un valor diferente de cero en la fila que itero
+			map<int,double> pivot = A.conex[col];
 
-		for(int j = col+1; j < A.n ; j++){
-			if(A.conex[j].begin() -> first == col ){
-				// hago resta de filas
-				reduceRowFromPivot(A.conex[j],pivot, j, col ,n, conjunta);
+			for(int j = col+1; j < A.n ; j++){
+				if(A.conex[j].begin() != A.conex[j].end() && A.conex[j].begin() -> first == col){ // si la columna de abajo no tiene un cero en col entonces la redusco
+					reduceRowFromPivot(A.conex[j],pivot, j, col ,n, conjunta);
+				}
 			}
 		}
 	}
 }
 
 // resuelve ecuaciones lineales y deja en res el resultado
-void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & res , int n ){
+// A tiene que ser cuadrada
+void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & res){
+	int n = A.n;
+
+	//cout<<"MATRIZ ANTES DE EG:" <<endl;
+	//mostrarRala(&A);
+	//cout << "LA CONJUNTA ANTES DE LA EG" << endl;
+	//mostrarVector(conjunta);
 	eliminacionGaussiana(A, conjunta);
+	//cout<<"\nMATRIZ DESPUES DE EG:" << endl;
+	//mostrarRala(&A);
+	//cout << "\nLA CONJUNTA DESPUES DE EG" << endl;
+	//mostrarVector(conjunta);
+
 	cout << "pasa eliminacion gaussiana" << endl;
 
 	for(int i = n-1; i >= 0 ; i --){
@@ -271,8 +319,26 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 				ac += (res[j] * (it2 -> second));	
 			}
 		}
-		res[i] = (conjunta[i] - ac )/ (A.conex[i]).find(i)->second;
+		if((A.conex[i]).find(i) != A.conex[i].end()){
+			res[i] = (conjunta[i] - ac )/ (A.conex[i]).find(i)->second;	
+		}
+		else{
+			ac = (conjunta[i] - ac );
+			if(abs(ac) > 0.000000001){
+				cout << "\n\n -------- " << endl;
+				cout << "el sistema no tiene solucion" << endl;
+				cout << "La matriz es:" << endl;
+				mostrarRala(&A);
+				cout << "\nY la conjunta es " << endl;
+				mostrarVector(conjunta);
+				return;
+			}
+			res[i]=1;
+		}
+		
 	} 
+	cout << "LA RESPUESTA FINAL: " << endl;
+	mostrarVector(res);
 }
 
 //NUEVO
@@ -343,8 +409,7 @@ map<int, double> convertirRayoEnFila(Rala& A){
 
 //Resolver CM: AtAx = Atb;
 vector<double> resolverCM(Rala& A, vector<double>& b){
-	int n = A.m;
-	vector<double> x(n, 0);
+	vector<double> x(A.m, 0);
 	vector<double> Atb (A.m, 0);
 	Rala At(A.m, A.n);
 	Rala AtA(A.m, A.m);
@@ -356,7 +421,7 @@ vector<double> resolverCM(Rala& A, vector<double>& b){
 	cout <<"bk2" << endl;
 	multiplicacionMatricial(At, A, AtA);
 	cout <<"bk3" << endl;
-	solveLinearEquations(AtA, Atb, x, n);
+	solveLinearEquations(AtA, Atb, x);
 	cout <<"bk4" << endl;
 	return x;
 }
