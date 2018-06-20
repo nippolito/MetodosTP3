@@ -26,7 +26,7 @@ public:
 
 	void EditPixelValue(unsigned int pixelNumber, uchar value);
 	void changePixelArray(uchar* array);
-	void SaveImage(std::string newFilePath);
+	void SaveImage(std::string newFilePath, _PPM_LOADER_PIXEL_TYPE pixelType);
 	uchar obtainPixelValue(unsigned int pixelNumber);
 	void aplanateImageArray(uchar* array);
 };

@@ -30,7 +30,7 @@ void testNoiser(){
 	TCSimulator Simulator(path);
 	Image* noiseImage = new Image(path);
 	Simulator.addSnPNoiseToSimulation(noiseImage, 0.1);
-	noiseImage->SaveImage("../imgs_TC/tomoConRuido.ppm");
+	noiseImage->SaveImage("../imgs_TC/tomoConRuido.ppm", PPM_LOADER_PIXEL_TYPE_RGB_8B);
 	delete noiseImage;
 }
 
@@ -92,7 +92,7 @@ void pruebaCasoReal(){
 	int cantRayos = 50;
 	Simulator.generarRayos(cantRayos, vector<pair<pair<double,double>, pair<double,double> > > ());
 	Image* imagenReconstruida = Simulator.regenerarImagen();
-	//imagenReconstruida->SaveImage("../imgs_TC/imagenReconstruida.ppm");
+	//imagenReconstruida->SaveImage("../imgs_TC/imagenReconstruida.ppm", PPM_LOADER_PIXEL_TYPE_RGB_8B);
 }
 
 
@@ -100,19 +100,25 @@ void pruebaImagenes(){
 	string path = "../imgs_TC/tomo2.ppm";
 	TCSimulator Simulator(path);
 	pruebaVerCuantoImitarImagenSePuede(Simulator);
-	Simulator.imageMatrix->SaveImage("../imgs_TC/prueba.ppm");
+	Simulator.imageMatrix->SaveImage("../imgs_TC/prueba.ppm", PPM_LOADER_PIXEL_TYPE_RGB_8B);
+}
+
+void pruebaLevantarDCMenCSV(){
+	string path = "../imgs_TC_out/1.2.826.0.1.3680043.2.656.1.138.35.csv";
+	TCSimulator Simulator(path);
+	Simulator.imageMatrix->SaveImage("../imgs_TC/pruebaDcm.ppm", PPM_LOADER_PIXEL_TYPE_GRAY_8B);
 }
 	
 
 
 int main(){
-	//testNoiser();
+	testNoiser();
 
 	//testReal();
 	//testJuguete();
 	//pruebaImagenes();
-	pruebaCasoReal();
-
+	//pruebaCasoReal();
+	pruebaLevantarDCMenCSV();
 	return 0;
 }
 
