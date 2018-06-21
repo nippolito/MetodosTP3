@@ -89,9 +89,20 @@ void pruebaVerCuantoImitarImagenSePuede(TCSimulator& Simulator){
 void pruebaCasoReal(){
 	string path = "../imgs_TC/tomo2.ppm";
 	TCSimulator Simulator(path);
-	int cantRayos = 50;
-	Simulator.generarRayos(cantRayos, vector<pair<pair<double,double>, pair<double,double> > > ());
-	Image* imagenReconstruida = Simulator.regenerarImagen();
+	//Simulator.doNoiseOnImage();
+	Simulator.logInfoImage();
+	Simulator.imageMatrix->SaveImage("../imgs_TC/pruebaNoise.ppm", PPM_LOADER_PIXEL_TYPE_GRAY_8B);
+
+	//TCSimulator Simulator2(path);
+	//Simulator2.doNoiseOnImage_2();
+	//Simulator2.imageMatrix->SaveImage("../imgs_TC/pruebaNoise_2.ppm", PPM_LOADER_PIXEL_TYPE_RGB_16B);
+
+	
+
+	return;
+	//int cantRayos = 50;
+	//Simulator.generarRayos(cantRayos, vector<pair<pair<double,double>, pair<double,double> > > ());
+	//Image* imagenReconstruida = Simulator.regenerarImagen();
 	//imagenReconstruida->SaveImage("../imgs_TC/imagenReconstruida.ppm", PPM_LOADER_PIXEL_TYPE_RGB_8B);
 }
 
@@ -112,13 +123,13 @@ void pruebaLevantarDCMenCSV(){
 
 
 int main(){
-	testNoiser();
+	//testNoiser();
 
-	//testReal();
+	pruebaCasoReal();
 	//testJuguete();
 	//pruebaImagenes();
 	//pruebaCasoReal();
-	pruebaLevantarDCMenCSV();
+	//pruebaLevantarDCMenCSV();
 	return 0;
 }
 

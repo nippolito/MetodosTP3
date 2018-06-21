@@ -10,8 +10,8 @@
 
 using namespace std;
 
-int green=0;
-int red = 1;
+int red=0;
+int green = 1;
 int blue = 2;
 
 struct Recta{
@@ -43,6 +43,23 @@ public:
 	vector<Rala> rayos;
 	vector<double> tiempos;
 
+	void logInfoImage(){
+		cout << "La memoria alocada en el iamge buffer is :  " << sizeof(imageMatrix->imageBuffer) << endl;
+	}
+
+	void doNoiseOnImage(){
+		for(int fila = 0 ; fila < imageMatrix->height ; fila++){
+			for(int col = 0 ; col < imageMatrix->width ; col++){
+				int pxl_size = 3;
+				imageMatrix->imageBuffer[fila * imageMatrix->width] = 
+				(imageMatrix->imageBuffer[fila * imageMatrix->width * pxl_size + red] +
+				imageMatrix->imageBuffer[fila * imageMatrix->width * pxl_size + green] +
+				imageMatrix->imageBuffer[fila * imageMatrix->width * pxl_size + blue]) / 3;
+			}
+		}
+	}
+
+	
 	//Methods
 	Image* LoadPixelsIntoImage(vector<char> pixels){
 		uchar* pixelsInRgb = new uchar[pixels.size() * 3]; 
@@ -108,6 +125,7 @@ public:
 
 
 	}
+
 
 	//pixel 1 siempre a izquierda del pixel 2
 	void createTCRay(pair<double,double> pixel1, pair<double,double> pixel2, Rala& distances){

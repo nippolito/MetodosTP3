@@ -2,6 +2,7 @@
 #define __RALA_H__
 
 #include <iostream>
+#include <fstream>
 #include <stdlib.h>
 #include <math.h>
 #include <vector>
@@ -405,7 +406,30 @@ map<int, double> convertirRayoEnFila(Rala& A){
 	return res;
 }
 
+void generarCSV(Rala&A){
+	  ofstream ata;
 
+	  //nombreHardcodeado para no cambiar parametros de entrada
+      ata.open ("AtA.csv");
+      
+      for (int i = 0; i < A.n; ++i)
+      {
+      	for (int j = 0; j < A.m; ++j)
+      	{
+      		map<int,double>::iterator it = A.conex[i].find(j);
+      		if (it != A.conex[i].end())
+      		{
+      			ata << it->second;
+      		}else{
+      			ata << "0";
+      		}
+
+      		if(j == (A.m - 1)){ ata << "\n";} else { ata << ",";}
+      	}
+      }
+      
+      ata.close();
+}
 
 
 //Resolver CM: AtAx = Atb;
@@ -422,8 +446,10 @@ vector<double> resolverCM(Rala& A, vector<double>& b){
 	cout <<"bk2" << endl;
 	multiplicacionMatricial(At, A, AtA);
 	cout <<"bk3" << endl;
-	solveLinearEquations(AtA, Atb, x);
+	generarCSV(AtA);
 	cout <<"bk4" << endl;
+	solveLinearEquations(AtA, Atb, x);
+	cout <<"bk5" << endl;
 	return x;
 }
 
