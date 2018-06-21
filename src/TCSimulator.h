@@ -228,16 +228,18 @@ public:
 		for(int i = 0 ; i < n ; i ++){
 			A.conex.push_back(convertirRayoEnFila(rayos[i]));
 		}
-		vector<double> imagenAplanada =  resolverCM(A, tiempos);
+		vector<double> imagenAplanada ;//=  resolverCM(A, tiempos);
 		Image* res = new Image();
 		res->height = imageMatrix->height;
 		res->width = imageMatrix->width;
 		uchar* newBuffer = new uchar[res->height*res->width*3];
+		int ac = 0 ;
 		for(int fila = 0; fila  < res->height; fila++){
 			for(int col = 0; col < res->width; col++){
-				newBuffer[fila*col*3+green] = imagenAplanada[fila*col];
-				newBuffer[fila*col*3+red] = imagenAplanada[fila*col];
-				newBuffer[fila*col*3+blue] = imagenAplanada[fila*col];
+				newBuffer[fila*col*3+green] =  ac % 255;//imagenAplanada[fila*col];
+				newBuffer[fila*col*3+red] = ac % 255;//imagenAplanada[fila*col];
+				newBuffer[fila*col*3+blue] = ac % 255;//imagenAplanada[fila*col];
+				ac++;
 			}
 		}
 		res->imageBuffer = newBuffer;
