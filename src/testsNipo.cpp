@@ -7,6 +7,7 @@
 #include <math.h>
 #include <string>
 #include <chrono>
+#include <experimental/filesystem>
 #include "matrizRala.h"
 
 using namespace std;
@@ -515,8 +516,62 @@ void testRayosFijosTomosCatedra(int kMax){
 }
 
 
+// ejemplo para iterar los csvs para abrir
+// void correrTestsPracticaEj2(){			// salvo los de entrada 200, son todos correctos.
+// 	std::chrono::time_point<std::chrono::system_clock> start, end;
+
+// 	fstream s ("salidasTestsCatedra.txt", ios::out);
+// 	for(int i = 1; i < 15; i++){
+// 		string st = "t" + std::to_string(i);
+// 		if(st != "t4"){
+// 			fstream e (st, ios::in);
+// 			int n;
+// 			e >> n;
+// 			std::vector<int> ent(n);
+// 			int aux;
+// 			for(int j = 0; j < n; j++){
+// 				e >> aux;
+// 				ent[j] = aux;
+// 			}
+// 			start = std::chrono::system_clock::now();
+// 			int res = Ej2(ent, n);
+// 			end = std::chrono::system_clock::now();
+// 			std::chrono::duration<double, std::milli> elapsed_seconds = end-start;			
+// 			s << res;
+// 			s << ",";
+// 			s << elapsed_seconds.count() << endl;
+// 		}
+// 	}
+// }
+
+void crearCSVs(Rala&A){
+	ofstream ata;
+
+	//nombreHardcodeado para no cambiar parametros de entrada
+	ata.open ("AtA.csv");
+
+	for (int i = 0; i < A.n; ++i)
+	{
+		for (int j = 0; j < A.m; ++j)
+		{
+			map<int,double>::iterator it = A.conex[i].find(j);
+			if (it != A.conex[i].end())
+			{
+				ata << it->second;
+			}else{
+				ata << "0";
+			}
+
+			if(j == (A.m - 1)){ ata << "\n";} else { ata << ",";}
+		}
+	}
+
+	ata.close();
+}
+
 int main(){
 	srand(time(NULL));
+	// iterateCSVs();
 	// vector<pair<pair<double, double>, pair<double, double> > > carlos = generadorRayosPuntoFijo(5, 5, 5, 0);
 	// mostrarVectorPairPairDoubleNipo(carlos);
 	// cout << carlos.size() << endl;
