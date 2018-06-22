@@ -96,8 +96,6 @@ public:
 		}
 
 		newImage->changePixelArray(byteArray);
-
-
 	}
 
 
@@ -154,6 +152,7 @@ public:
 
 	TCSimulator(string imageSimulatedPath){
 		imageMatrix = new Image(imageSimulatedPath);
+		imageMatrix->convertToCSV("exp_nipo/imagenStruct");
 	}
 
 	TCSimulator(){
@@ -262,6 +261,9 @@ public:
 
 
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
+
+		generarCSVVector(imagenAplanada, "exp_nipo/imagenAplan3");
+		
 		Image* res = new Image();
 		res->height = imageMatrix->height;
 		res->width = imageMatrix->width;
@@ -277,6 +279,9 @@ public:
 			}
 		}
 		res->imageBuffer = newBuffer;
+
+		//res->convertToCSV("exp_nipo/imagenStruct");
+
 		return res;
 	}
 

@@ -132,5 +132,16 @@ void Image::SaveImage(std::string newFilePath, _PPM_LOADER_PIXEL_TYPE  pixelType
  	bool ret = SavePPMFile(newFilePath.c_str(),imageBuffer,width,height,pixelType, comments);
 }
 
+void Image::convertToCSV(string name){
+	fstream sal(name+".csv", ios::out);
+	for (int i = 0; i < height; ++i)
+	{
+		for (int j = 0; j < width; ++j)
+		{
+			// cout << obtainPixelValue(i * width + j) << endl;
+			sal << (int) obtainPixelValue(i * width + j) << endl;
+		}
+	}
+}
 
 

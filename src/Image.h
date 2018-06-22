@@ -29,6 +29,7 @@ public:
 	void SaveImage(std::string newFilePath, _PPM_LOADER_PIXEL_TYPE pixelType);
 	uchar obtainPixelValue(unsigned int pixelNumber);
 	void aplanateImageArray(uchar* array);
+	void convertToCSV(string name);
 };
 
 #endif //__IMAGE_H__
