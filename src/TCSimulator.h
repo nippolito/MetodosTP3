@@ -204,6 +204,7 @@ public:
 	}
 
 	void generarRayos(int cantRayos, vector<pair<pair<double,double>, pair<double,double> > > pixelesPorDondePasar){
+		srand (time(NULL));
 		int cantRayosDefinidos = pixelesPorDondePasar.size();
 		int cantRayosRandom = cantRayos - cantRayosDefinidos; 
 		tiempos = std::vector<double> ();
@@ -237,8 +238,11 @@ public:
 		}
 		int pxl_size = 3;
 
-		cout << "VECTOR TIEMPOS" << endl;
-		mostrarVector(tiempos);
+		//cout << "MATRIZ RALA DE RAYOS" << endl;
+		//mostrarRala2(&A);
+
+		//cout << "VECTOR TIEMPOS" << endl;
+		//mostrarVector(tiempos);
 
 
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
@@ -263,8 +267,7 @@ public:
 
 	//setea en pixel1 y pixel2 dos puntos random dentro de la planilla
 	//ACLARACION: siempre pixel1 esta a la izquierda de pixel2
-	void createTwoRandomPoints(int n, int m, pair<double,double>& pixel1, pair<double,double>& pixel2){
-		srand (time(NULL));
+	void createTwoRandomPoints(int n, int m, pair<double,double>& pixel1, pair<double,double>& pixel2){	
 		long max_rand = 1000000L;
 		double x1 = 0 + (double)m * (rand() % max_rand) / max_rand;
 		double x2 = 0 + (double)m * (rand() % max_rand) / max_rand;;
