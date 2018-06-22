@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <stdlib.h>
 #include <math.h>
 #include <vector>
@@ -437,11 +438,11 @@ map<int, double> convertirRayoEnFila(Rala& A){
 	return res;
 }
 
-void generarCSV(Rala&A){
+void generarCSV(Rala&A, string name){
 	  ofstream ata;
 
 	  //nombreHardcodeado para no cambiar parametros de entrada
-      ata.open ("AtA.csv");
+      ata.open (name+".csv");
       
       for (int i = 0; i < A.n; ++i)
       {
@@ -462,6 +463,21 @@ void generarCSV(Rala&A){
       ata.close();
 }
 
+void generarCSVVector(vector<double> V, string name){
+	  ofstream ata;
+
+	  //nombreHardcodeado para no cambiar parametros de entrada
+      ata.open (name+".csv");
+      
+      for (int i = 0; i < V.size(); ++i)
+      {
+      	ata << V[i] << "\n";
+      }
+      
+      ata.close();
+}
+
+
 
 //Resolver CM: AtAx = Atb;
 vector<double> resolverCM(Rala& A, vector<double>& b){
@@ -478,6 +494,9 @@ vector<double> resolverCM(Rala& A, vector<double>& b){
 	cout <<"bk3" << endl;
 	solveLinearEquations(AtA, Atb, x);
 	cout <<"bk5" << endl;
+
+	generarCSVVector(x, "3_solucion");
+
 	return x;
 }
 

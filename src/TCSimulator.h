@@ -237,8 +237,8 @@ public:
 		}
 		int pxl_size = 3;
 
-cout << "VECTOR TIEMPOS" << endl;
-mostrarVector(tiempos);
+		cout << "VECTOR TIEMPOS" << endl;
+		mostrarVector(tiempos);
 
 
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
