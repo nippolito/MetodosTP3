@@ -105,7 +105,7 @@ void pruebaLevantarDCMenCSV(){
 void pruebaCasoRealDiscretizando(){
 	string path = "../imgs_TC/tomo.ppm";
 	TCSimulator Simulator(path);
-	int cantRayos = 500;
+	int cantRayos = 1000;
 	Simulator.generarRayos(cantRayos, vector<pair<pair<double,double>, pair<double,double> > > ());
 	Image* imagenReconstruida = Simulator.regenerarImagen();
 	imagenReconstruida->SaveImage("../imgs_TC/imagenReconstruida.ppm", PPM_LOADER_PIXEL_TYPE_RGB_8B);
