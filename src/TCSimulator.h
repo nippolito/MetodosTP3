@@ -86,21 +86,7 @@ public:
 					byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3+ 2);
 					
 				}
-				// if (p <= r && r <=thresh){
-				// 	byteArray[i* imageMatrix->width * 3 + j * 3] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3);
-				// 	byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3 + 1);
-				// 	byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3+ 2);	
-				// }
-				// else if(byteArray[i* imageMatrix->width * 3 + j * 3] < 122){
-				// 	byteArray[i* imageMatrix->width * 3 + j * 3] = 255;
-				// 	byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = 255;
-				// 	byteArray[i* imageMatrix->width * 3 + j * 3 + 2] = 255;
-				// }
-				// else{
-				// 	byteArray[i* imageMatrix->width * 3 + j * 3] = 0;
-				// 	byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = 0;
-				// 	byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = 0;
-				// }
+				
 			}
 		}
 
@@ -196,6 +182,36 @@ public:
 		return tiempo;
 	}
 
+	void discretizarMatrizDireccionesEnOrdenDe(Rala& original, Rala& discretizada, int ordenDeMagnitud){
+		if (original.n != discretizada.n * ordenDeMagnitud || original.m != discretizada.m * ordenDeMagnitud)
+		{
+			cout << "Discretizacion con orden de magnitud o tamaño de matriz resultado incorrectos" << endl;
+			return;
+		}
+
+		for (int i = 0; i < original.n; ++i)
+		{
+			int posFilaEnDiscretizacion = floor(i/ordenDeMagnitud);
+		
+			// map<int,double>::iterator distResultado = discretizada.conex[posFilaEnDiscretizacion].find(0);
+			// map<int,double>::iterator distResultadoB = distResultado;
+		
+			map<int,double>::iterator it = original.conex[i].begin();
+			for(; it != original.conex[i].end(); it++){
+				cout << "hay elemento en " << i << " - " << it->first << endl;	
+
+				int posCol = it->first;
+				int posColEnDiscretizacion = floor(posCol / ordenDeMagnitud);
+
+				map<int,double>::iterator distDiscretizacion = discretizada.conex[posFilaEnDiscretizacion].find(posColEnDiscretizacion);
+				if (distDiscretizacion == discretizada.conex[posFilaEnDiscretizacion].end())
+					discretizada.conex[posFilaEnDiscretizacion].insert(pair<int,double>(posColEnDiscretizacion, 1));
+				else
+					distDiscretizacion->second += 1;
+			}
+		}
+
+	}
 	void generarRayos(int cantRayos, vector<pair<pair<double,double>, pair<double,double> > > pixelesPorDondePasar){
 		int cantRayosDefinidos = pixelesPorDondePasar.size();
 		int cantRayosRandom = cantRayos - cantRayosDefinidos; 
@@ -244,6 +260,32 @@ public:
 		return res;
 	}
 
+	Image* regenerarImagenConDiscretizacion(int ordenDeMagnitud){
+		int n = rayos.size();
+		Rala A = Rala(n, getWidth()*getHeight());
+		A.conex = vector< map<int, double> >();
+		for(int i = 0 ; i < n ; i ++){
+			Rala rayoDiscretizado = Rala(getWidth()/ordenDeMagnitud, getHeight()/ordenDeMagnitud);
+
+			discretizarMatrizDireccionesEnOrdenDe(rayos[i], rayoDiscretizado, ordenDeMagnitud);
+
+			A.conex.push_back(convertirRayoEnFila(rayoDiscretizado));
+		}
+		vector<double> imagenAplanada =  resolverCM(A, tiempos);
+		Image* res = new Image();
+		res->height = getWidth()/ordenDeMagnitud;
+		res->width = getHeight()/ordenDeMagnitud;
+		uchar* newBuffer = new uchar[res->height*res->width*3];
+		for(int fila = 0; fila  < res->height; fila++){
+			for(int col = 0; col < res->width; col++){
+				newBuffer[fila*col*3+green] = imagenAplanada[fila*col];
+				newBuffer[fila*col*3+red] = imagenAplanada[fila*col];
+				newBuffer[fila*col*3+blue] = imagenAplanada[fila*col];
+			}
+		}
+		res->imageBuffer = newBuffer;
+		return res;
+	}
 
 	//setea en pixel1 y pixel2 dos puntos random dentro de la planilla
 	//ACLARACION: siempre pixel1 esta a la izquierda de pixel2

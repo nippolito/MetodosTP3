@@ -108,17 +108,26 @@ void pruebaLevantarDCMenCSV(){
 	TCSimulator Simulator(path);
 	Simulator.imageMatrix->SaveImage("../imgs_TC/pruebaDcm.ppm", PPM_LOADER_PIXEL_TYPE_GRAY_8B);
 }
-	
+
+void pruebaCasoRealDiscretizando(){
+	string path = "../imgs_TC/tomo.ppm";
+	TCSimulator Simulator(path);
+	int cantRayos = 500;
+	Simulator.generarRayos(cantRayos, vector<pair<pair<double,double>, pair<double,double> > > ());
+	Image* imagenReconstruida = Simulator.regenerarImagen();
+	imagenReconstruida->SaveImage("../imgs_TC/imagenReconstruida.ppm", PPM_LOADER_PIXEL_TYPE_RGB_8B);
+}
 
 
 int main(){
-	testNoiser();
+	//testNoiser();
 
+	pruebaCasoRealDiscretizando();
 	//testReal();
 	//testJuguete();
 	//pruebaImagenes();
 	//pruebaCasoReal();
-	pruebaLevantarDCMenCSV();
+	//pruebaLevantarDCMenCSV();
 	return 0;
 }
 
