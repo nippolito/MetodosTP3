@@ -50,6 +50,43 @@ double ECM(vector<double> v1, vector<double> v2){
 	return res;
 }
 
+// como entrada toma el orden de magnitud de la discretización,
+// el simulador con los rayos ya creados, y un entero para devolver el ECM ahí
+// adentro discretiza los rayos, resuelve CM, calcula el ECM entre la nueva imagen y la origial, 
+// y devuelve la imagen discretizada
+// Image* regenerarImagenConDiscretizacionNipo(int ordenDeMagnitud, TCSimulator& Simulator, double ECM){
+// 	int n = Simulator.rayos.size();
+// 	Rala A = Rala(n, Simulator.getWidth()*Simulator.getHeight());
+// 	A.conex = vector< map<int, double> >();
+// 	for(int i = 0 ; i < n ; i ++){
+// 		Rala rayosoDiscretizado = Rala(Simulator.getWidth()/ordenDeMagnitud, Simulator.getHeight()/ordenDeMagnitud);
+
+// 		Simulator.discretizarMatrizDireccionesEnOrdenDe(Simulator.rayos[i], rayoDiscretizado, ordenDeMagnitud);
+
+// 		A.conex.push_back(Simulator.convertirRayoEnFila(rayoDiscretizado));
+// 	}
+// 	vector<double> imagenAplanada = Simulator.resolverCM(A, Simulator.tiempos);
+
+// 	// discretizo la original
+
+// 	// calculo ECM
+
+
+// 	Image* res = new Image();
+// 	res->height = Simulator.getWidth()/ordenDeMagnitud;
+// 	res->width = Simulator.getHeight()/ordenDeMagnitud;
+// 	uchar* newBuffer = new uchar[res->height*res->width*3];
+// 	for(int fila = 0; fila  < res->height; fila++){
+// 		for(int col = 0; col < res->width; col++){
+// 			newBuffer[fila*col*3+green] = imagenAplanada[fila*col];
+// 			newBuffer[fila*col*3+red] = imagenAplanada[fila*col];
+// 			newBuffer[fila*col*3+blue] = imagenAplanada[fila*col];
+// 		}
+// 	}
+// 	res->imageBuffer = newBuffer;
+// 	return res;
+// }
+
 // m pixeles de altura, n pixeles de ancho
 // genera dado un punto fijo al azar en el algún extremo
 // (pos = 0 extremo izquierdo, pos = 1 extremo arriba, pos = 2 extremo derecho, pos = 3 extremo abajo)
@@ -347,25 +384,25 @@ void testsECM(){
 	// debe coutear 4/3. funciona OK parece
 }
 
-// hace el generador de rayos opuestos variando el porcentaje de rayos desde 5 hasta kMax, fijando tres p de ruido. Todo con las 3 tomografías de la cátedra. Compara ECM
+// hace el generador de rayos opuestos variando el porcentaje de rayos desde 5 hasta kMax, fijando tres p de ruido. Todo con la ppm de la cátedra de 100x100. Compara ECM
 // para elegir la cantidad k de rayos tomo el porcentaje de rayos que quiero según el máximo entre el alto y el ancho
-// FALTA PONERLE CHRONO TAMBIÉN PARA TOMAR TIEMPO Y VER QUÉ ONDA LA DISCRETIZACIÓN Y SI SÓLO ME QUEDO CON TOMO1
+// FALTA PONERLE CHRONO TAMBIÉN PARA TOMAR TIEMPO Y VER QUÉ ONDA LA DISCRETIZACIÓN
 void testRayosOpuestosTomosCatedra(int kMax){
-	fstream sal1("tests_nipo/opuestosTomo1.csv", ios::out);
-	fstream sal2("tests_nipo/opuestosTomo2.csv", ios::out);
-	fstream sal3("tests_nipo/opuestosTomo3.csv", ios::out);
+	fstream sal1("exp_nipo/opuestosTomo1.csv", ios::out);
+	// fstream sal2("tests_nipo/opuestosTomo2.csv", ios::out);
+	// fstream sal3("tests_nipo/opuestosTomo3.csv", ios::out);
 
 	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
-	sal2 << "m,n,pctjeRayos,ECM,tiempo" << endl;
-	sal3 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	// sal2 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	// sal3 << "m,n,pctjeRayos,ECM,tiempo" << endl;
 
-	string path1 = "imgs_TC/tomo.ppm";
-	string path2 = "imgs_TC/tomo2.ppm";
-	string path3 = "imgs_TC/tomo3.ppm";
+	string path1 = "../imgs_TC/tomo.ppm";
+	// string path2 = "imgs_TC/tomo2.ppm";
+	// string path3 = "imgs_TC/tomo3.ppm";
 
 	TCSimulator Simulator1(path1);
-	TCSimulator Simulator2(path2);
-	TCSimulator Simulator3(path3);
+	// TCSimulator Simulator2(path2);
+	// TCSimulator Simulator3(path3);
 
 	for(int i = 5; i < kMax; i = i + 5){
 		cout << "Voy por porcentaje = " << i << endl;
@@ -375,19 +412,19 @@ void testRayosOpuestosTomosCatedra(int kMax){
 		// me aseguro que k1 siempre sea par para no tener las rectas constantes
 		if(k1 % 2 == 1) k1++;
 
-		int dimMax2 = max(Simulator2.getHeight(), Simulator2.getWidth());
-		int k2 = round((double) dimMax2 * kMax / 100);
+		// int dimMax2 = max(Simulator2.getHeight(), Simulator2.getWidth());
+		// int k2 = round((double) dimMax2 * kMax / 100);
 		// me aseguro que k2 siempre sea par para no tener las rectas constantes
-		if(k2 % 2 == 1) k2++;
+		// if(k2 % 2 == 1) k2++;
 
-		int dimMax3 = max(Simulator3.getHeight(), Simulator3.getWidth());
-		int k3 = round((double) dimMax3 * kMax / 100);
+		// int dimMax3 = max(Simulator3.getHeight(), Simulator3.getWidth());
+		// int k3 = round((double) dimMax3 * kMax / 100);
 		// me aseguro que k3 siempre sea par para no tener las rectas constantes
-		if(k3 % 2 == 1) k3++;
+		// if(k3 % 2 == 1) k3++;
 
 		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosOpuestos(Simulator1.getHeight(), Simulator1.getWidth(), k1);
-		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo2 = generadorRayosOpuestos(Simulator2.getHeight(), Simulator2.getWidth(), k2);
-		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo3 = generadorRayosOpuestos(Simulator3.getHeight(), Simulator3.getWidth(), k3);
+		// vector<pair<pair<double, double>, pair<double, double> > > rayosTomo2 = generadorRayosOpuestos(Simulator2.getHeight(), Simulator2.getWidth(), k2);
+		// vector<pair<pair<double, double>, pair<double, double> > > rayosTomo3 = generadorRayosOpuestos(Simulator3.getHeight(), Simulator3.getWidth(), k3);
 
 		for(int j = 0; j < 10; j++){
 			// lo hago 10 veces para tomar promedio de tiempos
@@ -403,8 +440,8 @@ void testRayosOpuestosTomosCatedra(int kMax){
 	}
 
 	sal1.close();
-	sal2.close();
-	sal3.close();
+	// sal2.close();
+	// sal3.close();
 }
 
 // hace el generador de rayos cruzados variando el porcentaje de rayos desde 5 hasta kMax, fijando tres p de ruido. Todo con las 3 tomografías de la cátedra. Compara ECM
@@ -569,6 +606,23 @@ void crearCSVs(Rala&A){
 	ata.close();
 }
 
+void testAsd(){
+	string path = "exp_nipo/test.csv";
+	TCSimulator Simulator(path);
+	vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosOpuestos(Simulator.getHeight(), Simulator.getWidth(), 10);
+	Simulator.generarRayos(20, rayosTomo1);
+	Image* nuevaImagen = Simulator.regenerarImagen();
+	nuevaImagen->SaveImage("exp_nipo/in/testCM.ppm", PPM_LOADER_PIXEL_TYPE_RGB_8B);
+	delete nuevaImagen;
+}
+
+void testAsf(){
+	string path = "exp_nipo/in/testCM.ppm";
+	TCSimulator Simulator(path);
+	Simulator.imageMatrix->convertToCSV("exp_nipo/tomo");
+}
+
+
 int main(){
 	srand(time(NULL));
 	// iterateCSVs();
@@ -580,5 +634,7 @@ int main(){
 	// vector<pair<pair<double, double>, pair<double, double> > > opuestos = generadorRayosOpuestos(10, 5, 4);
 	// mostrarVectorPairPairDoubleNipo(opuestos);
 	// cout << fRand(0.5, 5.3) << endl;
+	// testAsd();
+	testAsf();
 	return 0;
 }
