@@ -105,10 +105,10 @@ void pruebaLevantarDCMenCSV(){
 void pruebaCasoRealDiscretizando(){
 	string path = "../imgs_TC/tomo.ppm";
 	TCSimulator Simulator(path);
-	int cantRayos = 500;
+	int cantRayos = 20000;
 	Simulator.generarRayos(cantRayos, vector<pair<pair<double,double>, pair<double,double> > > ());
-	Image* imagenReconstruida = Simulator.regenerarImagen();
-	imagenReconstruida->SaveImage("../imgs_TC/imagenReconstruida.ppm", PPM_LOADER_PIXEL_TYPE_RGB_8B);
+	Image* imagenReconstruida = Simulator.regenerarImagenConDiscretizacion(4);
+	imagenReconstruida->SaveImage("../imgs_TC/imagenReconstruida.ppm", PPM_LOADER_PIXEL_TYPE_GRAY_8B);
 }
 
 
@@ -116,7 +116,7 @@ void pruebaCasoReal(){
 	string path = "../imgs_TC/tomo.ppm";
 	TCSimulator Simulator(path);
 	//Simulator.logInfoImage();
-	Simulator.generarRayos(200, vector<pair<pair<double,double>, pair<double,double> > >());
+	Simulator.generarRayos(20000, vector<pair<pair<double,double>, pair<double,double> > >());
 	Image* imgRes = Simulator.regenerarImagen();
 
 	
@@ -128,9 +128,9 @@ void pruebaCasoReal(){
 int main(){
 	//testNoiser();
 
-	pruebaCasoRealDiscretizando();
+	//pruebaCasoRealDiscretizando();
 	//testReal();
-	pruebaCasoReal();
+	pruebaCasoRealDiscretizando();
 	//testJuguete();
 	//pruebaImagenes();
 	//pruebaCasoReal();
