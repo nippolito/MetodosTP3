@@ -47,18 +47,6 @@ public:
 		cout << "La memoria alocada en el iamge buffer is :  " << sizeof(imageMatrix->imageBuffer) << endl;
 	}
 
-	void doNoiseOnImage(){
-		for(int fila = 0 ; fila < imageMatrix->height ; fila++){
-			for(int col = 0 ; col < imageMatrix->width ; col++){
-				int pxl_size = 3;
-				imageMatrix->imageBuffer[fila * imageMatrix->width] = 
-				(imageMatrix->imageBuffer[fila * imageMatrix->width * pxl_size + red] +
-				imageMatrix->imageBuffer[fila * imageMatrix->width * pxl_size + green] +
-				imageMatrix->imageBuffer[fila * imageMatrix->width * pxl_size + blue]) / 3;
-			}
-		}
-	}
-
 
 	//Methods
 	Image* LoadPixelsIntoImage(vector<char> pixels){
@@ -248,17 +236,23 @@ public:
 			A.conex.push_back(convertirRayoEnFila(rayos[i]));
 		}
 		int pxl_size = 3;
+
+cout << "VECTOR TIEMPOS" << endl;
+mostrarVector(tiempos);
+
+
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
 		Image* res = new Image();
 		res->height = imageMatrix->height;
 		res->width = imageMatrix->width;
-		uchar* newBuffer = new uchar[res->height*res->width*pxl_size];
+		uchar* newBuffer = (uchar*)malloc(res->height*res->width*pxl_size);
+
 		int ac = 0 ;
-		for(int fila = 0; fila  < res->height; fila++){
+		for(int fila = 0; fila   < res->height; fila++){
 			for(int col = 0; col < res->width; col++){
-				newBuffer[fila*res->width*pxl_size + col*pxl_size + green] =  imagenAplanada[fila*col];
-				newBuffer[fila*res->width*pxl_size + col*pxl_size + red] =  imagenAplanada[fila*col];
-				newBuffer[fila*res->width*pxl_size + col*pxl_size + blue] =  imagenAplanada[fila*col];
+				newBuffer[fila*res->width*pxl_size + col*pxl_size + green] = imagenAplanada[fila*imageMatrix->width + col ];
+				newBuffer[fila*res->width*pxl_size + col*pxl_size + red] =   imagenAplanada[fila*imageMatrix->width + col ];
+				newBuffer[fila*res->width*pxl_size + col*pxl_size + blue] =  imagenAplanada[fila*imageMatrix->width + col ];
 				ac++;
 			}
 		}

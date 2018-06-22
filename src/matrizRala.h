@@ -41,6 +41,15 @@ void mostrarVector(vector<double> x){
 	cout << "]" << endl;
 }
 
+void mostrarArreglo(double* vec, int n){
+	cout << "[" ;
+	for (int i = 0; i < n; ++i)
+	{
+		cout << vec[i] << ", ";
+	}
+	cout << "]" << endl;
+}
+
 void mostrarVectorPair(map<int,double>* filas, int m){
 	// cout << "longitud de vec: " << vec.size() << endl;
 	cout << "[";
@@ -56,9 +65,30 @@ void mostrarVectorPair(map<int,double>* filas, int m){
 	cout << "]" << endl;
 }
 
+void mostrarVectorPair2(map<int,double>* filas, int m){
+	// cout << "longitud de vec: " << vec.size() << endl;
+	cout << "[";
+	for(int i =  0 ; i < m ; i ++){
+		map<int,double>::iterator it = filas -> find(i);
+		string comaOrEnd = i == m-1 ? "" : ", "; 
+		if(it != filas->end()){
+			cout << "(" << it->first << "," <<it -> second << ")"<< comaOrEnd;
+		}else{
+			//cout <<"0" << comaOrEnd;
+		}
+	}
+	cout << "]" << endl;
+}
+
 void mostrarRala(Rala* matriz){
 	for(int link = 0; link < matriz->n; link++){
 		mostrarVectorPair(&matriz->conex[link], matriz->m);
+	}
+}
+
+void mostrarRala2(Rala* matriz){
+	for(int link = 0; link < matriz->n; link++){
+		mostrarVectorPair2(&matriz->conex[link], matriz->m);
 	}
 }
 
@@ -439,7 +469,6 @@ vector<double> resolverCM(Rala& A, vector<double>& b){
 	vector<double> Atb (A.m, 0);
 	Rala At(A.m, A.n);
 	Rala AtA(A.m, A.m);
-
 	
 	createTranspose(A, At);
 	cout <<"bk1" << endl;
@@ -447,8 +476,6 @@ vector<double> resolverCM(Rala& A, vector<double>& b){
 	cout <<"bk2" << endl;
 	multiplicacionMatricial(At, A, AtA);
 	cout <<"bk3" << endl;
-	//generarCSV(AtA);
-	cout <<"bk4" << endl;
 	solveLinearEquations(AtA, Atb, x);
 	cout <<"bk5" << endl;
 	return x;

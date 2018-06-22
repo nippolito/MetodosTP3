@@ -142,6 +142,8 @@ void mostrarVector(vector<double>& vec){
 	cout << endl;
 }
 
+
+
 void mostrarVectorInt(vector<int>& vec){
 	for (int i = 0; i < vec.size(); ++i)
 	{
