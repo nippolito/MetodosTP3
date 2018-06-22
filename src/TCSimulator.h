@@ -59,7 +59,7 @@ public:
 		}
 	}
 
-	
+
 	//Methods
 	Image* LoadPixelsIntoImage(vector<char> pixels){
 		uchar* pixelsInRgb = new uchar[pixels.size() * 3]; 
@@ -203,12 +203,13 @@ public:
 		double tiempo = 0 ;
 		int n = distances.n;
 		int m = distances.m;
+		int pxl_size = 3;
 		for(int i = 0 ; i < n ; i ++){
-			for (int j = 0; j < m; ++j){
-				map<int,double>::iterator it = distances.conex[i].find(j);
-				if( it != distances.conex[i].end() ){
-					tiempo += (imageMatrix->imageBuffer[i*m*3 + j + green] + imageMatrix->imageBuffer[i*m*3 + j + red] + imageMatrix->imageBuffer[i*m*3 + j + blue]) / 3;
-				}
+			map<int,double>::iterator it = distances.conex[i].begin();
+			for(; it != distances.conex[i].end(); it ++){
+				tiempo += (imageMatrix->imageBuffer[i * imageMatrix->width * pxl_size + it->first * pxl_size + red] +
+				imageMatrix->imageBuffer[i * imageMatrix->width * pxl_size + it->first * pxl_size + green] +
+				imageMatrix->imageBuffer[i * imageMatrix->width * pxl_size + it->first * pxl_size + blue]) / 3;
 			}
 		}
 		return tiempo;
@@ -246,17 +247,18 @@ public:
 		for(int i = 0 ; i < n ; i ++){
 			A.conex.push_back(convertirRayoEnFila(rayos[i]));
 		}
-		vector<double> imagenAplanada ;//=  resolverCM(A, tiempos);
+		int pxl_size = 3;
+		vector<double> imagenAplanada =  resolverCM(A, tiempos);
 		Image* res = new Image();
 		res->height = imageMatrix->height;
 		res->width = imageMatrix->width;
-		uchar* newBuffer = new uchar[res->height*res->width*3];
+		uchar* newBuffer = new uchar[res->height*res->width*pxl_size];
 		int ac = 0 ;
 		for(int fila = 0; fila  < res->height; fila++){
 			for(int col = 0; col < res->width; col++){
-				newBuffer[fila*col*3+green] =  ac % 255;//imagenAplanada[fila*col];
-				newBuffer[fila*col*3+red] = ac % 255;//imagenAplanada[fila*col];
-				newBuffer[fila*col*3+blue] = ac % 255;//imagenAplanada[fila*col];
+				newBuffer[fila*res->width*pxl_size + col*pxl_size + green] =  imagenAplanada[fila*col];
+				newBuffer[fila*res->width*pxl_size + col*pxl_size + red] =  imagenAplanada[fila*col];
+				newBuffer[fila*res->width*pxl_size + col*pxl_size + blue] =  imagenAplanada[fila*col];
 				ac++;
 			}
 		}

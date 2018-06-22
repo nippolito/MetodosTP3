@@ -87,11 +87,14 @@ void pruebaVerCuantoImitarImagenSePuede(TCSimulator& Simulator){
 }
 
 void pruebaCasoReal(){
-	string path = "../imgs_TC/tomo2.ppm";
+	string path = "../imgs_TC/tomo.ppm";
 	TCSimulator Simulator(path);
-	//Simulator.doNoiseOnImage();
-	Simulator.logInfoImage();
-	Simulator.imageMatrix->SaveImage("../imgs_TC/pruebaNoise.ppm", PPM_LOADER_PIXEL_TYPE_GRAY_8B);
+	//Simulator.logInfoImage();
+	Simulator.generarRayos(200, vector<pair<pair<double,double>, pair<double,double> > >());
+	Image* imgRes = Simulator.regenerarImagen();
+
+	
+	imgRes->SaveImage("../imgs_TC/prueba.ppm", PPM_LOADER_PIXEL_TYPE_RGB_8B);
 
 	//TCSimulator Simulator2(path);
 	//Simulator2.doNoiseOnImage_2();

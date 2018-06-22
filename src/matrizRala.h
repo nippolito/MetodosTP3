@@ -280,7 +280,7 @@ void eliminacionGaussiana(Rala & A, vector<double> & conjunta){
 	long long int entra = 0;
 	long long int noentra = 0;
 	for(int col = 0  ; col < n ; col ++){
-		cout << "voy por la columna: " << col <<endl;
+		//cout << "voy por la columna: " << col <<endl;
 		int filaPivot = primeraFilaSinUnCeroEnLaCol(A,col);
 		//si la columna no son todos ceros entonces...
 		if(filaPivot != -1){
@@ -330,9 +330,9 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 				cout << "\n\n -------- " << endl;
 				cout << "el sistema no tiene solucion" << endl;
 				cout << "La matriz es:" << endl;
-				mostrarRala(&A);
+				//mostrarRala(&A);
 				cout << "\nY la conjunta es " << endl;
-				mostrarVector(conjunta);
+				//mostrarVector(conjunta);
 				return;
 			}
 			res[i]=1;
@@ -395,11 +395,12 @@ map<int, double> convertirRayoEnFila(Rala& A){
 	int nfilas = A.n;
 	int mcolumnas = A.m;
 
+	int pxl_size = 3;
 	for (int i = 0; i < nfilas; i++)
 	{
 		map<int,double>::iterator it = A.conex[i].begin();
 		for(; it != A.conex[i].end(); it++){
-			res.insert(pair<int,double>(it->first, 1));
+			res.insert(pair<int,double>(i*A.m + it->first, 1));
 		}
 	}
 
@@ -446,7 +447,7 @@ vector<double> resolverCM(Rala& A, vector<double>& b){
 	cout <<"bk2" << endl;
 	multiplicacionMatricial(At, A, AtA);
 	cout <<"bk3" << endl;
-	generarCSV(AtA);
+	//generarCSV(AtA);
 	cout <<"bk4" << endl;
 	solveLinearEquations(AtA, Atb, x);
 	cout <<"bk5" << endl;
