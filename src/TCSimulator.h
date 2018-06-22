@@ -10,8 +10,8 @@
 
 using namespace std;
 
-int green=0;
-int red = 1;
+int red=0;
+int green = 1;
 int blue = 2;
 
 struct Recta{
@@ -42,6 +42,11 @@ public:
 	Image* imageMatrix;
 	vector<Rala> rayos;
 	vector<double> tiempos;
+
+	void logInfoImage(){
+		cout << "La memoria alocada en el iamge buffer is :  " << sizeof(imageMatrix->imageBuffer) << endl;
+	}
+
 
 	//Methods
 	Image* LoadPixelsIntoImage(vector<char> pixels){
@@ -94,6 +99,7 @@ public:
 
 
 	}
+
 
 	//pixel 1 siempre a izquierda del pixel 2
 	void createTCRay(pair<double,double> pixel1, pair<double,double> pixel2, Rala& distances){
@@ -171,12 +177,13 @@ public:
 		double tiempo = 0 ;
 		int n = distances.n;
 		int m = distances.m;
+		int pxl_size = 3;
 		for(int i = 0 ; i < n ; i ++){
-			for (int j = 0; j < m; ++j){
-				map<int,double>::iterator it = distances.conex[i].find(j);
-				if( it != distances.conex[i].end() ){
-					tiempo += (imageMatrix->imageBuffer[i*m*3 + j + green] + imageMatrix->imageBuffer[i*m*3 + j + red] + imageMatrix->imageBuffer[i*m*3 + j + blue]) / 3;
-				}
+			map<int,double>::iterator it = distances.conex[i].begin();
+			for(; it != distances.conex[i].end(); it ++){
+				tiempo += (imageMatrix->imageBuffer[i * imageMatrix->width * pxl_size + it->first * pxl_size + red] +
+				imageMatrix->imageBuffer[i * imageMatrix->width * pxl_size + it->first * pxl_size + green] +
+				imageMatrix->imageBuffer[i * imageMatrix->width * pxl_size + it->first * pxl_size + blue]) / 3;
 			}
 		}
 		return tiempo;
@@ -244,16 +251,25 @@ public:
 		for(int i = 0 ; i < n ; i ++){
 			A.conex.push_back(convertirRayoEnFila(rayos[i]));
 		}
+		int pxl_size = 3;
+
+		cout << "VECTOR TIEMPOS" << endl;
+		mostrarVector(tiempos);
+
+
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
 		Image* res = new Image();
 		res->height = imageMatrix->height;
 		res->width = imageMatrix->width;
-		uchar* newBuffer = new uchar[res->height*res->width*3];
-		for(int fila = 0; fila  < res->height; fila++){
+		uchar* newBuffer = (uchar*)malloc(res->height*res->width*pxl_size);
+
+		int ac = 0 ;
+		for(int fila = 0; fila   < res->height; fila++){
 			for(int col = 0; col < res->width; col++){
-				newBuffer[fila*col*3+green] = imagenAplanada[fila*col];
-				newBuffer[fila*col*3+red] = imagenAplanada[fila*col];
-				newBuffer[fila*col*3+blue] = imagenAplanada[fila*col];
+				newBuffer[fila*res->width*pxl_size + col*pxl_size + green] = imagenAplanada[fila*imageMatrix->width + col ];
+				newBuffer[fila*res->width*pxl_size + col*pxl_size + red] =   imagenAplanada[fila*imageMatrix->width + col ];
+				newBuffer[fila*res->width*pxl_size + col*pxl_size + blue] =  imagenAplanada[fila*imageMatrix->width + col ];
+				ac++;
 			}
 		}
 		res->imageBuffer = newBuffer;

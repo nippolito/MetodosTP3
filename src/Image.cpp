@@ -42,6 +42,10 @@ Image::Image(std::string newFilePath){
   		filePath = newFilePath;
   		label = obtainPathUntilLastFolder(filePath);
   		bool ret = LoadPPMFile(&imageBuffer, &width, &height, &pt, filePath.c_str());
+  		cout << "el size del image buffer es : " ; 
+  		cout << sizeof(*imageBuffer) << endl;
+  		cout << "height es : " << height<< endl;
+  		cout << "width es : "<< width << endl;
   		
 	}
 	//Apartir de este momento esta clase no es mas exportable ya que no existe hardcodeo mas hermoso y horrible que asumir .csv = .dcm

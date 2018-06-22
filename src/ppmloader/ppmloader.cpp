@@ -195,6 +195,9 @@ bool LoadPPMFile(uchar** data, int *width, int *height, PPM_LOADER_PIXEL_TYPE* p
 		return false;
 	}
 
+std::cout<< "el tipo de imagen que levanto es :" << std::endl;
+std::cout << pixel_depth << std::endl;
+
 	// Read raw data from file
 	int size = (*width) * (*height) * channels * pixel_depth;
 	*data = new uchar[size];

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <stdlib.h>
 #include <math.h>
 #include <vector>
@@ -41,6 +42,15 @@ void mostrarVector(vector<double> x){
 	cout << "]" << endl;
 }
 
+void mostrarArreglo(double* vec, int n){
+	cout << "[" ;
+	for (int i = 0; i < n; ++i)
+	{
+		cout << vec[i] << ", ";
+	}
+	cout << "]" << endl;
+}
+
 void mostrarVectorPair(map<int,double>* filas, int m){
 	// cout << "longitud de vec: " << vec.size() << endl;
 	cout << "[";
@@ -56,9 +66,30 @@ void mostrarVectorPair(map<int,double>* filas, int m){
 	cout << "]" << endl;
 }
 
+void mostrarVectorPair2(map<int,double>* filas, int m){
+	// cout << "longitud de vec: " << vec.size() << endl;
+	cout << "[";
+	for(int i =  0 ; i < m ; i ++){
+		map<int,double>::iterator it = filas -> find(i);
+		string comaOrEnd = i == m-1 ? "" : ", "; 
+		if(it != filas->end()){
+			cout << "(" << it->first << "," <<it -> second << ")"<< comaOrEnd;
+		}else{
+			//cout <<"0" << comaOrEnd;
+		}
+	}
+	cout << "]" << endl;
+}
+
 void mostrarRala(Rala* matriz){
 	for(int link = 0; link < matriz->n; link++){
 		mostrarVectorPair(&matriz->conex[link], matriz->m);
+	}
+}
+
+void mostrarRala2(Rala* matriz){
+	for(int link = 0; link < matriz->n; link++){
+		mostrarVectorPair2(&matriz->conex[link], matriz->m);
 	}
 }
 
@@ -280,7 +311,7 @@ void eliminacionGaussiana(Rala & A, vector<double> & conjunta){
 	long long int entra = 0;
 	long long int noentra = 0;
 	for(int col = 0  ; col < n ; col ++){
-		cout<< "faltan "<< n-col << endl;
+		//cout << "voy por la columna: " << col <<endl;
 		int filaPivot = primeraFilaSinUnCeroEnLaCol(A,col);
 		//si la columna no son todos ceros entonces...
 		if(filaPivot != -1){
@@ -330,17 +361,17 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 				cout << "\n\n -------- " << endl;
 				cout << "el sistema no tiene solucion" << endl;
 				cout << "La matriz es:" << endl;
-				mostrarRala(&A);
+				//mostrarRala(&A);
 				cout << "\nY la conjunta es " << endl;
-				mostrarVector(conjunta);
+				//mostrarVector(conjunta);
 				return;
 			}
 			res[i]=1;
 		}
 		
 	} 
-	cout << "LA RESPUESTA FINAL: " << endl;
-	mostrarVector(res);
+	//cout << "LA RESPUESTA FINAL: " << endl;
+	//mostrarVector(res);
 }
 
 //NUEVO
@@ -362,7 +393,7 @@ void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 	//Ahora transp tiene:
 	//transp.conex.size = cantidad de columnas
 	int maxColumnaB = transp.m;
-
+	cout<< "MULTIPLICANDO MATRICES --> " << endl;
 	//Itero por las i filas de A
 	for(int i = 0; i < nA; i++){
 		for(int j = 0 ; j < maxColumnaB ; j ++){
@@ -395,22 +426,23 @@ map<int, double> convertirRayoEnFila(Rala& A){
 	int nfilas = A.n;
 	int mcolumnas = A.m;
 
+	int pxl_size = 3;
 	for (int i = 0; i < nfilas; i++)
 	{
 		map<int,double>::iterator it = A.conex[i].begin();
 		for(; it != A.conex[i].end(); it++){
-			res.insert(pair<int,double>(it->first, 1));
+			res.insert(pair<int,double>(i*A.m + it->first, 1));
 		}
 	}
 
 	return res;
 }
 
-void generarCSV(Rala&A){
+void generarCSV(Rala&A, string name){
 	  ofstream ata;
 
 	  //nombreHardcodeado para no cambiar parametros de entrada
-      ata.open ("AtA.csv");
+      ata.open (name+".csv");
       
       for (int i = 0; i < A.n; ++i)
       {
@@ -431,6 +463,21 @@ void generarCSV(Rala&A){
       ata.close();
 }
 
+void generarCSVVector(vector<double> V, string name){
+	  ofstream ata;
+
+	  //nombreHardcodeado para no cambiar parametros de entrada
+      ata.open (name+".csv");
+      
+      for (int i = 0; i < V.size(); ++i)
+      {
+      	ata << V[i] << "\n";
+      }
+      
+      ata.close();
+}
+
+
 
 //Resolver CM: AtAx = Atb;
 vector<double> resolverCM(Rala& A, vector<double>& b){
@@ -438,7 +485,6 @@ vector<double> resolverCM(Rala& A, vector<double>& b){
 	vector<double> Atb (A.m, 0);
 	Rala At(A.m, A.n);
 	Rala AtA(A.m, A.m);
-
 	
 	createTranspose(A, At);
 	cout <<"bk1" << endl;
@@ -446,10 +492,11 @@ vector<double> resolverCM(Rala& A, vector<double>& b){
 	cout <<"bk2" << endl;
 	multiplicacionMatricial(At, A, AtA);
 	cout <<"bk3" << endl;
-	generarCSV(AtA);
-	cout <<"bk4" << endl;
 	solveLinearEquations(AtA, Atb, x);
 	cout <<"bk5" << endl;
+
+	generarCSVVector(x, "3_solucion");
+
 	return x;
 }
 
