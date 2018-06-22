@@ -291,6 +291,68 @@ public:
 		//cout << "pixel1: " << x1 << ", " << y1 << endl;
 		//cout << "pixel2: " << x2 << ", " << y2 << endl;
 	}
+
+
+	/*
+
+	//PARAMETROS: un vector de rayos, donde cada rayo esta dado por dos puntos. y pRuido parametro del ruido a generar
+	//PRECONDICION:
+		//-Por cada par de puntos del rayo, ambos puntos deben estar en los bordes, osea x = 0 o x = ancho o y = 0 o y = alto.
+		//-La instancia de TCSimulator debe estar limpia. Esto es, no puede haber nada en "rayos" ni "tiempos"
+	vector<double> obtenerImagenPorRayos(vector<pair<pair<double,double>, pair<double,double> > > coordenadasRayos, double pRuido){
+
+		//Idea:
+		//1 - Se generan los rayos a partir de los puntos con la funcion de grego.
+		//2 - Por cada rayo, se busca en la imagen el tiempo total en la imagen fuente.
+		//3 - Se agrega ruido
+		//4 - Se guarda el rayo (que es una matriz rala) como fila en una nueva matriz A y el tiempo de cada rayo Ti en un vector B
+		//5 - Habiendo hecho eso para cada rayo, se resuelve el sistema de ecuaciones.
+		//6 - Se devuelve el vector resultado y se regenera la imagen (se escupe en file sistem)
+
+		int cantRayos = coordenadasRayos.size();
+		vector<double> tiemposRayos(cantRayos, 0);
+
+		
+		//Me guardo la imagen original para despues restaurarla. 
+		//La funcion que toma el tiempo de recorrido, lo hace sobre la imagen guardada en esta instancia de TCSimulator.
+		//Image* imagenOriginal = new Image();
+		//imagenOriginal->imageBuffer = imageMatrix->imageBuffer;
+		
+		//3
+		//TIPO DE RUIDO HARDCODEADO. Si se quiere usar otro modificar la linea
+		addSnPNoiseToSimulation(imageMatrix, pRuido);
+
+		cout << "ya agrego ruido" << endl;
+
+		
+		for (int i = 0; i < cantRayos; ++i)
+		{
+			//1
+			rayos.push_back(Rala(getHeight(), getWidth()));
+			pair<double,double> pixel1 = coordenadasRayos[i].first;
+			pair<double,double> pixel2 = coordenadasRayos[i].second;
+			createTCRay(pixel1, pixel2, rayos[i]);
+
+			//2
+			tiemposRayos.push_back(tiempoDeRecorrido(rayos[i]));
+
+		}
+
+		cout << "Rayos y tiempos creados" << endl;
+
+		tiempos = tiemposRayos;
+
+		//4, 5 y 6
+		pair<Image*, vector<double> > res = regenerarImagen();
+
+		cout << "sistema resuelto. falta crear imagen" << endl;
+
+		//res.first->SaveImage("../imgRes/resultadoRayos.ppm");
+		return res.second;
+
+	}
+
+	*/
 		
 private:
 	bool isNotInEdge(pair<int,int> pixel){

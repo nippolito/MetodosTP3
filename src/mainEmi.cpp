@@ -8,7 +8,7 @@
 #include <string>
 #include <chrono>
 #include "matrizRala.h"
-
+//#include "testsNipo.cpp"
 
 using namespace std;
 
@@ -77,16 +77,35 @@ void TestParaAplanar(){ 	// pasa, todo OK
 }
 
 void TestParaCM(){
-	Rala A = Rala(3,3);
+	Rala A = Rala(4,4);
 
-	insertarElemento(A, 0, 0, 1);
-	insertarElemento(A, 1, 1, 1);
-	insertarElemento(A, 2, 2, 1);
+	insertarElemento(A, 0, 0, 1.003);
+	insertarElemento(A, 0, 1, 2.9803);
+	insertarElemento(A, 0, 2, 4);
+	insertarElemento(A, 0, 3, 6.983);
+
+	insertarElemento(A, 1, 0, 4.0001);
+	insertarElemento(A, 1, 1, 6.4267);
+	insertarElemento(A, 1, 2, 8.23);
+	insertarElemento(A, 1, 3, 9);
 	
+	insertarElemento(A, 2, 0, 10);
+	insertarElemento(A, 2, 1, 11);
+	insertarElemento(A, 2, 2, 12.8731);
+	insertarElemento(A, 2, 3, 10.01);
+	
+	insertarElemento(A, 3, 0, 78);
+	insertarElemento(A, 3, 1, 43);
+	insertarElemento(A, 3, 2, 0.0035);
+	insertarElemento(A, 3, 3, 4.034);
+	
+
+
 	vector<double> b;
+	b.push_back(2);
+	b.push_back(7);
 	b.push_back(4);
-	b.push_back(5);
-	b.push_back(1);
+	b.push_back(8);
 
 	vector<double> res = resolverCM(A, b);
 
@@ -96,10 +115,22 @@ void TestParaCM(){
 	}
 }
 
+/*
+void testObtenerImagen(){
+	string path = "../imgs_TC/tomo2.ppm";
+	TCSimulator Simulator(path);
+	int altura = Simulator.getHeight();
+	int ancho = Simulator.getWidth();
+	vector<double> res = Simulator.obtenerImagenPorRayos(generadorRayosCruzados(altura, ancho, 10), 0.5);
+
+}
+*/
+
 
 int main(){
 	//Test1ParaMult();
 	//TestParaAplanar();
 	TestParaCM();
+	//testObtenerImagen();
 	return 1;
 }
