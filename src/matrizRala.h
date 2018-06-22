@@ -366,7 +366,7 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 				//mostrarVector(conjunta);
 				return;
 			}
-			res[i]=1;
+			res[i]=0;
 		}
 		
 	} 
@@ -493,9 +493,13 @@ vector<double> resolverCM(Rala& A, vector<double>& b){
 	multiplicacionMatricial(At, A, AtA);
 	cout <<"bk3" << endl;
 	solveLinearEquations(AtA, Atb, x);
+	vector<double> AtaX = vector<double>(6);
+	multiplicacionPorVector(AtA,x,AtaX);
+	mostrarVector(AtaX);
+	mostrarVector(Atb);
 	cout <<"bk5" << endl;
 
-	generarCSVVector(x, "3_solucion");
+	//generarCSVVector(x, "3_solucion");
 
 	return x;
 }
