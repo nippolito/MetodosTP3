@@ -117,7 +117,7 @@ void pruebaCasoReal(){
 	string path = "../imgs_TC/tomo.ppm";
 	TCSimulator Simulator(path);
 	//Simulator.logInfoImage();
-	Simulator.generarRayos(20000, vector<pair<pair<double,double>, pair<double,double> > >());
+	Simulator.generarRayos(2000, vector<pair<pair<double,double>, pair<double,double> > >());
 	Image* imgRes = Simulator.regenerarImagen();
 
 	
@@ -131,7 +131,7 @@ int main(){
 
 	//pruebaCasoRealDiscretizando();
 	//testReal();
-	pruebaCasoRealDiscretizando();
+	pruebaCasoReal();
 	//testJuguete();
 	//pruebaImagenes();
 	//pruebaCasoReal();

@@ -311,7 +311,7 @@ void eliminacionGaussiana(Rala & A, vector<double> & conjunta){
 	long long int entra = 0;
 	long long int noentra = 0;
 	for(int col = 0  ; col < n ; col ++){
-		cout << "voy por la columna: " << col <<endl;
+		//cout << "voy por la columna: " << col <<endl;
 		int filaPivot = primeraFilaSinUnCeroEnLaCol(A,col);
 		//si la columna no son todos ceros entonces...
 		if(filaPivot != -1){
@@ -373,11 +373,8 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 				return;
 			}
 			res[i]=0;
-		}
-		
+		}	
 	} 
-	//cout << "LA RESPUESTA FINAL: " << endl;
-	//mostrarVector(res);
 }
 
 //NUEVO
@@ -402,7 +399,7 @@ void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 	//Itero por las i filas de A
 	for(int i = 0; i < nA; i++){
 		for(int j = 0 ; j < maxColumnaB ; j ++){
-			cout << i << " " << j << endl;
+			//cout << i << " " << j << endl;
 			map<int,double> filA = A.conex[i];
 			map<int,double> colB = transp.conex[j];
 			double multRes = multiplicarFilas(filA, colB);

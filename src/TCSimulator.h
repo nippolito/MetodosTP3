@@ -205,7 +205,7 @@ public:
 		
 			map<int,double>::iterator it = original.conex[i].begin();
 			for(; it != original.conex[i].end(); it++){
-				cout << "hay elemento en " << i << " - " << it->first << endl;	
+			//	cout << "hay elemento en " << i << " - " << it->first << endl;	
 
 				int posCol = it->first;
 				int posColEnDiscretizacion = floor(posCol / ordenDeMagnitud);
