@@ -327,22 +327,28 @@ void eliminacionGaussiana(Rala & A, vector<double> & conjunta){
 	}
 }
 
+void tieneCerosEnLaDiagonal(Rala& A){
+	int n = A.n;
+	int m = A.m;
+
+	for(int i = 0 ; i < n; i++){
+		if(A.conex[i].find(i) == A.conex[i].end()){
+			cout << "TIENE CEROS EN LA DIAGONAL DESPUES DE ELIMINACION GAUSSIANA" << endl;
+			return;
+		}
+	}
+}
+
 // resuelve ecuaciones lineales y deja en res el resultado
 // A tiene que ser cuadrada
 void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & res){
 	int n = A.n;
 
-	//cout<<"MATRIZ ANTES DE EG:" <<endl;
-	//mostrarRala(&A);
-	//cout << "LA CONJUNTA ANTES DE LA EG" << endl;
-	//mostrarVector(conjunta);
 	eliminacionGaussiana(A, conjunta);
-	//cout<<"\nMATRIZ DESPUES DE EG:" << endl;
-	//mostrarRala(&A);
-	//cout << "\nLA CONJUNTA DESPUES DE EG" << endl;
-	//mostrarVector(conjunta);
 
 	cout << "pasa eliminacion gaussiana" << endl;
+
+	tieneCerosEnLaDiagonal(A);
 
 	for(int i = n-1; i >= 0 ; i --){
 		double ac = 0 ;
@@ -367,11 +373,8 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 				return;
 			}
 			res[i]=0;
-		}
-		
+		}	
 	} 
-	//cout << "LA RESPUESTA FINAL: " << endl;
-	//mostrarVector(res);
 }
 
 //NUEVO
@@ -396,7 +399,7 @@ void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 	//Itero por las i filas de A
 	for(int i = 0; i < nA; i++){
 		for(int j = 0 ; j < maxColumnaB ; j ++){
-			cout << i << " " << j << endl;
+			//cout << i << " " << j << endl;
 			map<int,double> filA = A.conex[i];
 			map<int,double> colB = transp.conex[j];
 			double multRes = multiplicarFilas(filA, colB);
