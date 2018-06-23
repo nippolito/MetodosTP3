@@ -42,6 +42,7 @@ public:
 	Image* imageMatrix;
 	vector<Rala> rayos;
 	vector<double> tiempos;
+	vector<double> solucion;
 
 	void logInfoImage(){
 		cout << "La memoria alocada en el iamge buffer is :  " << sizeof(imageMatrix->imageBuffer) << endl;
@@ -262,6 +263,7 @@ public:
 
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
 
+		solucion = imagenAplanada;
 		generarCSVVector(imagenAplanada, "exp_nipo/imagenAplan3");
 		
 		Image* res = new Image();
@@ -299,6 +301,7 @@ public:
 		cout << A.n  << endl;
 		cout << A.m << endl;
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
+		solucion = imagenAplanada;
 		Image* res = new Image();
 		res->height = getWidth()/ordenDeMagnitud;
 		res->width = getHeight()/ordenDeMagnitud;
