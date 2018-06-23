@@ -470,17 +470,17 @@ void generarCSV(Rala&A, string name){
 }
 
 void generarCSVVector(vector<double> V, string name){
-	  ofstream ata;
+	ofstream ata;
 
-	  //nombreHardcodeado para no cambiar parametros de entrada
-      ata.open (name+".csv");
-      
-      for (int i = 0; i < V.size(); ++i)
-      {
-      	ata << V[i] << "\n";
-      }
-      
-      ata.close();
+	//nombreHardcodeado para no cambiar parametros de entrada
+	ata.open (name+".csv");
+
+	for (int i = 0; i < V.size(); ++i)
+	{
+		ata << V[i] << "\n";
+	}
+
+	ata.close();
 }
 
 

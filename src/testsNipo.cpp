@@ -619,7 +619,12 @@ void testAsd(){
 void testAsf(){
 	string path = "exp_nipo/in/testCM.ppm";
 	TCSimulator Simulator(path);
-	Simulator.imageMatrix->convertToCSV("exp_nipo/tomo");
+	// Simulator.imageMatrix->convertToCSV("exp_nipo/tomo");
+	vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosOpuestos(Simulator.getHeight(), Simulator.getWidth(), 150);
+	vector<pair<pair<double, double>, pair<double, double> > > asd;
+	Simulator.generarRayos(50, asd);
+	Image* nuevaImagen = Simulator.regenerarImagen();
+	nuevaImagen->SaveImage("exp_nipo/in/juan.ppm", PPM_LOADER_PIXEL_TYPE_RGB_8B);
 }
 
 

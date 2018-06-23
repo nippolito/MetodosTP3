@@ -42,6 +42,7 @@ public:
 	Image* imageMatrix;
 	vector<Rala> rayos;
 	vector<double> tiempos;
+	vector<double> solucion;
 
 	void logInfoImage(){
 		cout << "La memoria alocada en el iamge buffer is :  " << sizeof(imageMatrix->imageBuffer) << endl;
@@ -96,8 +97,6 @@ public:
 		}
 
 		newImage->changePixelArray(byteArray);
-
-
 	}
 
 
@@ -154,6 +153,7 @@ public:
 
 	TCSimulator(string imageSimulatedPath){
 		imageMatrix = new Image(imageSimulatedPath);
+		imageMatrix->convertToCSV("exp_nipo/imagenStruct");
 	}
 
 	TCSimulator(){
@@ -262,6 +262,10 @@ public:
 
 
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
+
+		solucion = imagenAplanada;
+		generarCSVVector(imagenAplanada, "exp_nipo/imagenAplan3");
+		
 		Image* res = new Image();
 		res->height = imageMatrix->height;
 		res->width = imageMatrix->width;
@@ -277,6 +281,9 @@ public:
 			}
 		}
 		res->imageBuffer = newBuffer;
+
+		//res->convertToCSV("exp_nipo/imagenStruct");
+
 		return res;
 	}
 
@@ -294,6 +301,7 @@ public:
 		cout << A.n  << endl;
 		cout << A.m << endl;
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
+		solucion = imagenAplanada;
 		Image* res = new Image();
 		res->height = getWidth()/ordenDeMagnitud;
 		res->width = getHeight()/ordenDeMagnitud;
