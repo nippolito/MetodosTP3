@@ -282,7 +282,7 @@ public:
 
 	Image* regenerarImagenConDiscretizacion(int ordenDeMagnitud){
 		int n = rayos.size();
-		Rala A = Rala(n, getWidth()*getHeight());
+		Rala A = Rala(n, getWidth()/ordenDeMagnitud* getHeight()/ordenDeMagnitud);
 		A.conex = vector< map<int, double> >();
 		for(int i = 0 ; i < n ; i ++){
 			Rala rayoDiscretizado = Rala(getWidth()/ordenDeMagnitud, getHeight()/ordenDeMagnitud);
@@ -291,16 +291,16 @@ public:
 
 			A.conex.push_back(convertirRayoEnFila(rayoDiscretizado));
 		}
+		cout << A.n  << endl;
+		cout << A.m << endl;
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
 		Image* res = new Image();
 		res->height = getWidth()/ordenDeMagnitud;
 		res->width = getHeight()/ordenDeMagnitud;
-		uchar* newBuffer = new uchar[res->height*res->width*3];
+		uchar* newBuffer = new uchar[res->height*res->width];
 		for(int fila = 0; fila  < res->height; fila++){
 			for(int col = 0; col < res->width; col++){
-				newBuffer[fila*col*3+green] = imagenAplanada[fila*col];
-				newBuffer[fila*col*3+red] = imagenAplanada[fila*col];
-				newBuffer[fila*col*3+blue] = imagenAplanada[fila*col];
+				newBuffer[fila*col] = imagenAplanada[fila*col];
 			}
 		}
 		res->imageBuffer = newBuffer;

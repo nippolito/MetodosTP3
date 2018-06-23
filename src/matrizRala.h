@@ -372,7 +372,7 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 				//mostrarVector(conjunta);
 				return;
 			}
-			res[i]=1;
+			res[i]=0;
 		}
 		
 	} 
@@ -392,17 +392,17 @@ void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 		cout << "Error al multiplicar matrices no cuadradas! La matriz de salida no tiene la misma cantidad de filas que A"<< endl;
 		return;
 	}
-
 	Rala transp = Rala(B.m, B.n);
 	createTranspose(B, transp);
 
 	//Ahora transp tiene:
 	//transp.conex.size = cantidad de columnas
-	int maxColumnaB = transp.m;
+	int maxColumnaB = transp.n;
 	cout<< "MULTIPLICANDO MATRICES --> " << endl;
 	//Itero por las i filas de A
 	for(int i = 0; i < nA; i++){
 		for(int j = 0 ; j < maxColumnaB ; j ++){
+			cout << i << " " << j << endl;
 			map<int,double> filA = A.conex[i];
 			map<int,double> colB = transp.conex[j];
 			double multRes = multiplicarFilas(filA, colB);
@@ -412,7 +412,7 @@ void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 		}
 	}
 }
-
+	
 
 //Dado que al crear una matriz rala, esta no esta "vacia" sino que posee un map por cada fila vacio,
 //"Añadir filas" no es mas que reemplazar la fila existente por otra que se desea crear. 
@@ -501,7 +501,7 @@ vector<double> resolverCM(Rala& A, vector<double>& b){
 	solveLinearEquations(AtA, Atb, x);
 	cout <<"bk5" << endl;
 
-	generarCSVVector(x, "3_solucion");
+	//generarCSVVector(x, "3_solucion");
 
 	return x;
 }
