@@ -34,144 +34,143 @@ struct Recta{
 	}
 };
 
+struct Image{
+	int height;
+	int width;
+	vector<vector<int> > imageBuffer;
+
+	Image(vector<vector<int>> image, int height, int width){
+		this->height = height;
+		this->width = width;
+		this->imageBuffer = image;
+	}
+	Image(){
+
+	}
+};
+
 class TCSimulator
 {
 public:
 	
 	//Properties
-	Image* imageMatrix;
+	Image imageMatrix;
 	vector<Rala> rayos;
 	vector<double> tiempos;
 	vector<double> solucion;
-
-	void logInfoImage(){
-		cout << "La memoria alocada en el iamge buffer is :  " << sizeof(imageMatrix->imageBuffer) << endl;
-	}
+	string savingPath;
 
 
-	//Methods
-	Image* LoadPixelsIntoImage(vector<char> pixels){
-		uchar* pixelsInRgb = new uchar[pixels.size() * 3]; 
-		//ppm parece que por alguna razon magica tiene 3 bytes por pixel, ergo si queremos transformar un vector de pixels en escala
-		//de grises, habria que agregarlo 3 veces, una vez por cada color(esto da la representacion en rgb de graysacle)
-		for (int i = 0; i < pixels.size(); ++i)
-		{
-			pixelsInRgb[i*3]=pixels[i];
-			pixelsInRgb[i*3+1]=pixels[i];
-			pixelsInRgb[i*3+2]=pixels[i];
-		}
-		return new Image(pixelsInRgb);
-	}
-	//Agregar ruido con distribucion salt & pepper, paso p probabilidad como argumento y defino t = 1-p,
-	//iterando sobre los pixeles obtengo un numero random r y si p<r<t entonces el pixel se mantiene igual,
-	//si no, r<p => pixel=negro, r>t => pixel=blanco 
-	void addSnPNoiseToSimulation(Image* newImage, double p){
-		srand (time(NULL));
-				
-		double thresh = 1 - p;
-		uchar* byteArray = new uchar[newImage->width * newImage->height * 9];
-		for (int i = 0; i < (imageMatrix->height); ++i)
-		{
-			for (int j = 0; j < (imageMatrix->width); ++j)
-			{
-				double r = (double) rand() / (RAND_MAX);
-				//cout << r << endl;
-				if (r<p){
-					byteArray[i* imageMatrix->width * 3 + j * 3] = 0;
-					byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = 0;
-					byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = 0;
-				}
-				else if (thresh<r){
-					byteArray[i* imageMatrix->width * 3 + j * 3] = 255;
-					byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = 255;
-					byteArray[i* imageMatrix->width * 3 + j * 3 + 2] = 255;
-				}
-				else{
-					byteArray[i* imageMatrix->width * 3 + j * 3] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3);
-					byteArray[i* imageMatrix->width * 3 + j * 3 + 1] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3 + 1);
-					byteArray[i* imageMatrix->width * 3 + j * 3+ 2] = imageMatrix->obtainPixelValue(i * imageMatrix->width *3+ j * 3+ 2);
-					
-				}
-				
+	int llenarRenglon(vector<int>& pixeles, string renglon){
+		int n = renglon.length();
+		int lastComa = 0 ;
+		for(int i = 0 ; i < n ; i ++){
+			if(renglon[i] == ','){
+				pixeles.push_back(stoi(renglon.substr(lastComa,i-lastComa)));
+			 	lastComa = i+1;
 			}
 		}
-
-		newImage->changePixelArray(byteArray);
+		pixeles.push_back(stoi(renglon.substr(lastComa,n-lastComa)));
+		return pixeles.size();
 	}
 
+	 
 
-	//pixel 1 siempre a izquierda del pixel 2
-	void createTCRay(pair<double,double> pixel1, pair<double,double> pixel2, Rala& distances){
-		//nos aseguramos que el primer pixel tenga un x menor a pixel2
-		//los rayos pueden "ir en sentido contrario" pero para la simulacion los trataremos SIEMPRE
-		//de izquierda a derecha
-		//PRECONDICION OBLIGATORIA: ambos puntos deben estar en los bordes, osea x = 0 o x = ancho o y = 0 o y = alto
+	TCSimulator(string path, string savingPath){
+		this->savingPath = savingPath;
+		filebuf fb;
+		fb.open (path,std::ios::in);
+		std::istream fs (&fb);
 
-		double a = (double) (pixel2.second - pixel1.second) / (double)(pixel2.first - pixel1.first);
-		double b = pixel1.second - a * pixel1.first;
+	    string s;
 
-		Recta recta = Recta(a,b);
-		//recta.print();
-		
-		if(a > 0){ // si la pendiente es poisitiva
-			for (int i = 0; i < distances.m; ++i){
-				int j = (int) floor(recta.f(i));
-				if(j < 0) j = 0 ; // esto para cuando la recta empieza desde el piso
-				if(j>distances.n) j = distances.n;
+	    vector<string> renglones; 
+	    int cantDeRenglones = 0 ;
+	    int cantElementosPorRenglon = 0 ;
 
-				double k = recta.f(i+1); // esta bien que este no sea un entero aviso
-				if(k < 0) k = 0; // esto cuando no pasa por ninguna de las dos columnas
-				if(k > distances.n ) k = distances.n ;// esto cuando se va por el techo la recta. 
+	    while(getline(fs,s)){
+	        renglones.push_back(s);
+	        cantDeRenglones ++ ;
+	    }
 
-				for (; j < k; j++){
-					//cout << i << " " << j << endl;
-					insertarElemento(distances,j, i,  1);
-				}
-			}		
-		}
-		else if( a < 0){ // si la pendiente es negativa
-			for (int i = 0; i < distances.m; ++i){
-				int j = (int) ceil(recta.f(i));
-				if(j > distances.n) j = distances.n ; // esto para cuando la recta empieza desde el techo
-				if(j < 0) j = 0;
+	    vector<vector<int> > pixeles;
+	    for(int i = 0 ;i < cantDeRenglones; i++){
+	    	pixeles.push_back(std::vector<int> ());
+	    }
+	    for(int i = 0 ;i < cantDeRenglones; i ++){
+	    	cantElementosPorRenglon = llenarRenglon(pixeles[i], renglones[i]);
+	    }
 
-				double k = recta.f(i+1); 
-				if(k > distances.n) k = distances.n; // esto cuando no pasa por ninguna de las dos columnas
-				if(k < 0) k = 0; // esto cuando se va por el piso la recta
-
-				for (; j > k; j--)
-				{
-					insertarElemento(distances, j-1, i , 1);
-				}
-				//cout << "\n" << endl;
-			}	
-		}
-		else{
-			cout << "te toco una funcion constante" << endl;
-		}
-	}
-
-	TCSimulator(string imageSimulatedPath){
-		imageMatrix = new Image(imageSimulatedPath);
-		imageMatrix->convertToCSV("exp_nipo/imagenStruct");
+	    imageMatrix = Image (pixeles, cantDeRenglones, cantElementosPorRenglon);
+	    cout << "TAMAÑOS DE IMAGENES" << endl;
+	    cout << "alto " << cantDeRenglones << endl;
+	    cout << "ancho " <<  cantElementosPorRenglon << endl;
 	}
 
 	TCSimulator(){
 		cout << "Mira que estas creando un simulador sin imagen.." << endl;
 	}
 
-	~TCSimulator(){
-		delete imageMatrix;		
+	~TCSimulator(){		
 	}
 
 	int getWidth(){
-		return imageMatrix->width;
+		return imageMatrix.width;
 	}
-
 
 	int getHeight(){
-		return imageMatrix->height;
+		return imageMatrix.height;
 	}
+
+	void createTCRay(pair<double,double> pixel1, pair<double,double> pixel2, Rala& distances){
+          //nos aseguramos que el primer pixel tenga un x menor a pixel2
+          //los rayos pueden "ir en sentido contrario" pero para la simulacion los trataremos SIEMPRE
+          //de izquierda a derecha
+          //PRECONDICION OBLIGATORIA: ambos puntos deben estar en los bordes, osea x = 0 o x = ancho o y = 0 o y = alto
+
+          double a = (double) (pixel2.second - pixel1.second) / (double)(pixel2.first - pixel1.first);
+          double b = pixel1.second - a * pixel1.first;
+
+          Recta recta = Recta(a,b);
+          //recta.print();
+
+          if(a > 0){ // si la pendiente es poisitiva
+                  for (int i = 0; i < distances.m; ++i){
+                          int j = (int) floor(recta.f(i));
+                          if(j < 0) j = 0 ; // esto para cuando la recta empieza desde el piso
+                          if(j>distances.n) j = distances.n;
+
+                          double k = recta.f(i+1); // esta bien que este no sea un entero aviso
+                          if(k < 0) k = 0; // esto cuando no pasa por ninguna de las dos columnas
+                          if(k > distances.n ) k = distances.n ;// esto cuando se va por el techo la recta.
+
+                          for (; j < k; j++){
+                                  //cout << i << " " << j << endl;
+                                  insertarElemento(distances,j, i,  1);
+                          }
+                  }
+          }
+          else if( a < 0){ // si la pendiente es negativa
+                  for (int i = 0; i < distances.m; ++i){
+                          int j = (int) ceil(recta.f(i));
+                          if(j > distances.n) j = distances.n ; // esto para cuando la recta empieza desde el techo
+                          if(j < 0) j = 0;
+
+                          double k = recta.f(i+1);
+                          if(k > distances.n) k = distances.n; // esto cuando no pasa por ninguna de las dos columnas
+                          if(k < 0) k = 0; // esto cuando se va por el piso la recta
+
+                          for (; j > k; j--)
+                          {
+                                  insertarElemento(distances, j-1, i , 1);
+                          }
+                          //cout << "\n" << endl;
+                  }
+          }
+          else{
+                  cout << "te toco una funcion constante" << endl;
+          }
+  }
 
 	double tiempoDeRecorrido(Rala& distances){
 		double tiempo = 0 ;
@@ -181,9 +180,7 @@ public:
 		for(int i = 0 ; i < n ; i ++){
 			map<int,double>::iterator it = distances.conex[i].begin();
 			for(; it != distances.conex[i].end(); it ++){
-				tiempo += (imageMatrix->imageBuffer[i * imageMatrix->width * pxl_size + it->first * pxl_size + red] +
-				imageMatrix->imageBuffer[i * imageMatrix->width * pxl_size + it->first * pxl_size + green] +
-				imageMatrix->imageBuffer[i * imageMatrix->width * pxl_size + it->first * pxl_size + blue]) / 3;
+				tiempo += (imageMatrix.imageBuffer[i][it->first]);
 			}
 		}
 		return tiempo;
@@ -245,49 +242,39 @@ public:
 		}
 	}
 
-	Image* regenerarImagen(){
-		int n = rayos.size();
-		Rala A = Rala(n, getWidth()*getHeight());
-		A.conex = vector< map<int, double> >();
-		for(int i = 0 ; i < n ; i ++){
-			A.conex.push_back(convertirRayoEnFila(rayos[i]));
-		}
-		int pxl_size = 3;
-
-		//cout << "MATRIZ RALA DE RAYOS" << endl;
-		//mostrarRala2(&A);
-
-		//cout << "VECTOR TIEMPOS" << endl;
-		//mostrarVector(tiempos);
-
-
-		vector<double> imagenAplanada =  resolverCM(A, tiempos);
-
-		solucion = imagenAplanada;
-		generarCSVVector(imagenAplanada, "exp_nipo/imagenAplan3");
-		
-		Image* res = new Image();
-		res->height = imageMatrix->height;
-		res->width = imageMatrix->width;
-		uchar* newBuffer = (uchar*)malloc(res->height*res->width*pxl_size);
-
-		int ac = 0 ;
-		for(int fila = 0; fila   < res->height; fila++){
-			for(int col = 0; col < res->width; col++){
-				newBuffer[fila*res->width*pxl_size + col*pxl_size + green] = imagenAplanada[fila*imageMatrix->width + col ];
-				newBuffer[fila*res->width*pxl_size + col*pxl_size + red] =   imagenAplanada[fila*imageMatrix->width + col ];
-				newBuffer[fila*res->width*pxl_size + col*pxl_size + blue] =  imagenAplanada[fila*imageMatrix->width + col ];
-				ac++;
+	vector<vector<int> > desAplanarImagen(std::vector<double>& iamgenAplanada, int height, int width){
+		int n = height;
+		int m = width;
+		std::vector<vector<int>> nuevaImagen;
+		for(int i = 0; i < n ; i ++){
+			nuevaImagen.push_back(std::vector<int> ());
+			for(int j = 0 ; j < m ; j++){
+				//cout << "(" << i <<" , " << j << ")" << endl;
+				nuevaImagen[i].push_back(iamgenAplanada[i*m + j]);
 			}
 		}
-		res->imageBuffer = newBuffer;
-
-		//res->convertToCSV("exp_nipo/imagenStruct");
-
-		return res;
+		return nuevaImagen;
 	}
 
-	Image* regenerarImagenConDiscretizacion(int ordenDeMagnitud){
+	void escribirCsv(std::vector<vector<int> >& image){
+		fstream sal(savingPath, ios::out);
+		int n = image.size();
+		int m = image[0].size();
+
+
+		for (int i = 0; i < n; ++i)
+		{
+			for (int j = 0; j < m; ++j)
+			{
+				string comaOrEnd = i == m-1 ? "" : ","; 
+				sal << image[i][j] << comaOrEnd;
+			}
+			sal << "\n";
+		}
+	}
+
+
+	Image regenerarImagenConDiscretizacion(int ordenDeMagnitud){
 		int n = rayos.size();
 		Rala A = Rala(n, getWidth()/ordenDeMagnitud* getHeight()/ordenDeMagnitud);
 		A.conex = vector< map<int, double> >();
@@ -298,21 +285,20 @@ public:
 
 			A.conex.push_back(convertirRayoEnFila(rayoDiscretizado));
 		}
-		cout << A.n  << endl;
-		cout << A.m << endl;
+		cout << "Discretizacion hecha" << endl;
+		cout << "Alto de matriz rayos: " << A.n  << endl;
+		cout << "Ancho de matriz rayos: " << A.m << endl;
+
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
 		solucion = imagenAplanada;
-		Image* res = new Image();
-		res->height = getWidth()/ordenDeMagnitud;
-		res->width = getHeight()/ordenDeMagnitud;
-		uchar* newBuffer = new uchar[res->height*res->width];
-		for(int fila = 0; fila  < res->height; fila++){
-			for(int col = 0; col < res->width; col++){
-				newBuffer[fila*col] = imagenAplanada[fila*col];
-			}
-		}
-		res->imageBuffer = newBuffer;
-		return res;
+		cout << "bk6" << endl;
+		cout << "IMAGEN APLANADA :" << endl;
+		mostrarVector(imagenAplanada);
+		vector<vector<int>> imagenDesAplanada = desAplanarImagen(imagenAplanada, getHeight()/ordenDeMagnitud, getWidth()/ordenDeMagnitud);
+		Image newImage (imagenDesAplanada, getHeight()/ordenDeMagnitud,  getWidth()/ordenDeMagnitud);
+		escribirCsv(imagenDesAplanada);
+		cout << "bk7" << endl;
+		return newImage;
 	}
 
 	//setea en pixel1 y pixel2 dos puntos random dentro de la planilla
