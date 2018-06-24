@@ -15,7 +15,7 @@ using namespace std;
 
 
 void pruebaCasoReal(){
-	string path = "../imgs_TC_out/exp_nipo/in/juan.csv";
+	string path = "exp_nipo/test.csv";
 	TCSimulator Simulator(path, "grego_out/tuvieja.csv");
 	//Simulator.logInfoImage();
 	Simulator.generarRayos(2000, vector<pair<pair<double,double>, pair<double,double> > >());

@@ -1,8 +1,8 @@
 CONTADOR=0
-SIZE_IMAGE=50
-P=$(ls *.ppm);
+SIZE_IMAGE=128
+P=$(ls *.png);
 for filename in $P ; do
 	SUFIX=$(echo $filename |cut -d'.' -f 1)
-	convert $filename -resize $SIZE_IMAGEx$SIZE_IMAGE resize_$SUFIX.ppm
+	convert $filename -resize $SIZE_IMAGEx$SIZE_IMAGE resize_$SUFIX.png
 	
 done
