@@ -269,7 +269,7 @@ public:
 		{
 			for (int j = 0; j < m; ++j)
 			{
-				string comaOrEnd = i == m-1 ? "" : ","; 
+				string comaOrEnd = j == m-1 ? "" : ","; 
 				sal << image[i][j] << comaOrEnd;
 			}
 			sal << "\n";
@@ -291,12 +291,11 @@ public:
 		cout << "Discretizacion hecha" << endl;
 		cout << "Alto de matriz rayos: " << A.n  << endl;
 		cout << "Ancho de matriz rayos: " << A.m << endl;
-
+		cout << "tiempos: " << endl;
+		mostrarVector(tiempos);
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
 		solucion = imagenAplanada;
 		cout << "bk6" << endl;
-		cout << "IMAGEN APLANADA :" << endl;
-		mostrarVector(imagenAplanada);
 		vector<vector<int>> imagenDesAplanada = desAplanarImagen(imagenAplanada, getHeight()/ordenDeMagnitud, getWidth()/ordenDeMagnitud);
 		Image newImage (imagenDesAplanada, getHeight()/ordenDeMagnitud,  getWidth()/ordenDeMagnitud);
 		escribirCsv(imagenDesAplanada);
