@@ -122,6 +122,9 @@ public:
 		return imageMatrix.height;
 	}
 
+
+
+
 	void createTCRay(pair<double,double> pixel1, pair<double,double> pixel2, Rala& distances){
           //nos aseguramos que el primer pixel tenga un x menor a pixel2
           //los rayos pueden "ir en sentido contrario" pero para la simulacion los trataremos SIEMPRE
@@ -324,6 +327,178 @@ public:
 		//cout << "pixel1: " << x1 << ", " << y1 << endl;
 		//cout << "pixel2: " << x2 << ", " << y2 << endl;
 	}
+
+
+
+
+
+
+	//Agregar ruido con distribucion salt & pepper, paso p probabilidad como argumento y defino t = 1-p,
+	//iterando sobre los pixeles obtengo un numero random r y si p<r<t entonces el pixel se mantiene igual,
+	//si no, r<p => pixel=negro, r>t => pixel=blanco 
+	void addSnPNoiseToSimulation(double p){
+		srand (time(NULL));
+				
+		double thresh = 1 - p;
+
+		//Creo un nuevo vector que despues sera la nueva imagen para pisar
+		vector<vector<int> >byteArrayResult(imageMatrix.height, vector<int>(imageMatrix.width));
+		
+		//Creo vectores planchados para trabajar mejor el algoritmo
+		vector<int >byteArray(imageMatrix.height * imageMatrix.width);
+		vector<int >source(imageMatrix.height * imageMatrix.width);
+
+		//Primero plancho el imageBuffer asi trabajo mejor
+		int sourceIndex = 0;
+		for (int i = 0; i < imageMatrix.height; ++i)
+		{
+			for (int j = 0; j < imageMatrix.width; ++j)
+			{
+				source[sourceIndex] = imageMatrix.imageBuffer[i][j];
+				sourceIndex++;
+			}
+		}
+
+
+		for (int i = 0; i < (imageMatrix.height); ++i)
+		{
+			for (int j = 0; j < (imageMatrix.width); ++j)
+			{
+				double r = (double) rand() / (RAND_MAX);
+				//cout << r << endl;
+				if (r<p){
+					byteArray[i* imageMatrix.width * 3 + j * 3] = 0;
+					byteArray[i* imageMatrix.width * 3 + j * 3 + 1] = 0;
+					byteArray[i* imageMatrix.width * 3 + j * 3+ 2] = 0;
+				}
+				else if (thresh<r){
+					byteArray[i* imageMatrix.width * 3 + j * 3] = 255;
+					byteArray[i* imageMatrix.width * 3 + j * 3 + 1] = 255;
+					byteArray[i* imageMatrix.width * 3 + j * 3 + 2] = 255;
+				}
+				else{
+					byteArray[i* imageMatrix.width * 3 + j * 3] = source[i * imageMatrix.width *3+ j * 3];
+					byteArray[i* imageMatrix.width * 3 + j * 3 + 1] = source[i * imageMatrix.width *3+ j * 3 + 1];
+					byteArray[i* imageMatrix.width * 3 + j * 3+ 2] = source[i * imageMatrix.width *3+ j * 3+ 2];
+					
+				}
+				
+			}
+		}
+
+		//Convierto el resultado en vector de vectores
+		int byteArrayIndex = 0;
+		for (int i = 0; i < imageMatrix.height; ++i)
+		{
+			for (int j = 0; j < imageMatrix.width; ++j)
+			{
+				byteArrayResult[i][j] = byteArray[byteArrayIndex];
+				byteArrayIndex++;
+			}
+		}
+
+
+
+		imageMatrix.imageBuffer = byteArrayResult;
+		//Ancho y alto se conservan
+}
+
+
+
+
+
+
+
+	//WRAPUP FUNCTION.
+
+	//PARAMETROS: un vector de rayos, donde cada rayo esta dado por dos puntos. pRuido parametro del ruido a generar. Orden de magnitud para discretizar
+	//PRECONDICION:
+	//-La instancia de TCSimulator debe estar limpia. Esto es, no puede haber nada en "rayos" ni "tiempos"
+	//RETURN: LA INSTANCIA QUEDA SUCIA! (tiene ruido) No reutilizar y crar otra!
+
+
+	vector<double> obtenerImagenPorRayos(vector<pair<pair<double,double>, pair<double,double> > > coordenadasRayos, double pRuido, int ordenDeMagnitud){
+
+		//Idea:
+
+		//1 - Se agrega ruido a la imagen. Esta instancia NO PUEDE ES REUTILIZABLE. (AL final de la funcion queda sucia)
+		//2 - Se generan los rayos a partir de los puntos con la funcion de grego.
+		//3 - Por cada rayo, se busca en la imagen el tiempo total en la imagen fuente.
+		//4 - Se guarda el rayo (que es una matriz rala) como fila en una nueva matriz A y el tiempo de cada rayo Ti en un vector B
+		//5 - Habiendo hecho eso para cada rayo, se discretiza y se resuelve el sistema de ecuaciones.
+		//6 - Se devuelve el vector resultado
+		
+
+		int cantRayos = coordenadasRayos.size();
+		
+		
+		//1
+		 		
+		//TIPO DE RUIDO HARDCODEADO. Si se quiere usar otro modificar la linea
+		addSnPNoiseToSimulation(pRuido);
+		cout << "ya agrego ruido" << endl;
+
+		//2
+		generarRayos(cantRayos, coordenadasRayos);
+
+		cout << "Rayos y tiempos creados" << endl;
+
+		//3, 4 y 5
+		Image resImagen = regenerarImagenConDiscretizacion(ordenDeMagnitud);
+
+		//"solucion" es otro atributo de TCSimulator para guardar la solucion. 
+		//6
+		vector<double> resVector = solucion;
+		cout << "sistema resuelto. " << endl;
+
+		//Image ya no tiene un metodo para guardar. hay que convertir el csv a png con script de la catedra
+		//resImagen->SaveImage(pathSaving, PPM_LOADER_PIXEL_TYPE_RGB_8B);
+
+
+		cout << "imagen creada. " << endl;
+
+
+		return resVector;
+
+	}
+
+	vector<double> obtenerVectorImageMatrix(){
+
+		vector<double> res(getWidth()*getHeight(), 0);
+		int indiceRes = 0;
+
+		for (int i = 0; i < imageMatrix.height; ++i){
+			for (int j = 0; j < imageMatrix.width; ++j)
+			{
+				res[indiceRes] = (double) imageMatrix.imageBuffer[i][j];
+				indiceRes++;
+			}
+				
+		}
+
+		return res; 	
+	}
+
+	vector<int> obtenerVectorImageMatrixINT(){
+
+		vector<int> res(getWidth()*getHeight(), 0);
+		int indiceRes = 0;
+
+		for (int i = 0; i < imageMatrix.height; ++i){
+			for (int j = 0; j < imageMatrix.width; ++j)
+			{
+				res[indiceRes] = (int) imageMatrix.imageBuffer[i][j];
+				indiceRes++;
+			}
+				
+		}
+
+		return res; 	
+	}
+
+
+	
+
 		
 private:
 	bool isNotInEdge(pair<int,int> pixel){

@@ -1,5 +1,5 @@
-#include "Image.cpp"
-//#include "TCSimulator.cpp"
+//#include "Image.cpp"
+//#include "TCSimulator.h"
 #include <fstream>
 #include <vector>
 #include <random>
@@ -7,8 +7,8 @@
 #include <math.h>
 #include <string>
 #include <chrono>
-#include "matrizRala.h"
-//#include "testsNipo.cpp"
+//#include "matrizRala.h"
+#include "testsNipo.cpp"
 
 using namespace std;
 
@@ -127,10 +127,25 @@ void testObtenerImagen(){
 */
 
 
+void testApp(){
+	string path = "../imgs_TC_out/tomo.csv";
+	TCSimulator Simulator(path,"emi_out/aver.csv");
+	// Simulator.imageMatrix->convertToCSV("exp_nipo/tomo");
+	vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosPuntoFijoIzq(Simulator.getHeight(), Simulator.getWidth(), 120);
+	//vector<pair<pair<double, double>, pair<double, double> > > asd;
+	//Simulator.generarRayos(50, asd);
+	vector<double> res = Simulator.obtenerImagenPorRayos(rayosTomo1, 0, 10);
+	//Image* nuevaImagen = Simulator.regenerarImagen();
+	//nuevaImagen->SaveImage("exp_nipo/in/ricardo.ppm", PPM_LOADER_PIXEL_TYPE_RGB_8B);
+
+}
+
+
+
 int main(){
 	//Test1ParaMult();
 	//TestParaAplanar();
-	TestParaCM();
+	testApp();
 	//testObtenerImagen();
 	return 1;
 }
