@@ -232,6 +232,9 @@ public:
 			createTCRay(pixel1, pixel2, rayos[i]);
 
 			tiempos.push_back(tiempoDeRecorrido(rayos[i]));
+
+			// mostrarRala(&rayos[i]);
+			// cout << endl;
 		}
 
 		for(int i = 0 ; i < cantRayosRandom; i++){
@@ -260,7 +263,7 @@ public:
 	}
 
 	void escribirCsv(std::vector<vector<int> >& image){
-		cout << "el saving path es" << endl;
+		// cout << "el saving path es" << endl;
 		fstream sal(savingPath, ios::out);
 		int n = image.size();
 		int m = image[0].size();
@@ -289,20 +292,21 @@ public:
 
 			A.conex.push_back(convertirRayoEnFila(rayoDiscretizado));
 		}
-		cout << "Discretizacion hecha" << endl;
-		cout << "Alto de matriz rayos: " << A.n  << endl;
-		cout << "Ancho de matriz rayos: " << A.m << endl;
-		cout << "tiempos: " << endl;
-		mostrarVector(tiempos);
+		// cout << "Discretizacion hecha" << endl;
+		// cout << "Alto de matriz rayos: " << A.n  << endl;
+		// cout << "Ancho de matriz rayos: " << A.m << endl;
+		// cout << "tiempos: " << endl;
+		// mostrarVector(tiempos);
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
+		cappearImagen(imagenAplanada);
 		solucion = imagenAplanada;
-		cout << "bk6" << endl;
+		// cout << "bk6" << endl;
 		vector<vector<int>> imagenDesAplanada = desAplanarImagen(imagenAplanada, getHeight()/ordenDeMagnitud, getWidth()/ordenDeMagnitud);
-		cout << "bk6.1" << endl;
+		// cout << "bk6.1" << endl;
 		Image newImage (imagenDesAplanada, getHeight()/ordenDeMagnitud,  getWidth()/ordenDeMagnitud);
-		cout << "bk6.2" << endl;
+		// cout << "bk6.2" << endl;
 		escribirCsv(imagenDesAplanada);
-		cout << "bk7" << endl;
+		// cout << "bk7" << endl;
 		return newImage;
 	}
 
@@ -398,7 +402,7 @@ public:
 	//RETURN: LA INSTANCIA QUEDA SUCIA! (tiene ruido) No reutilizar y crar otra!
 
 
-	vector<double> obtenerImagenPorRayos(vector<pair<pair<double,double>, pair<double,double> > > coordenadasRayos, double pRuido, int ordenDeMagnitud){
+	vector<double> obtenerImagenPorRayos(vector<pair<pair<double,double>, pair<double,double> > > coordenadasRayos, double pRuido, int ordenDeMagnitud, int quieroRandom){
 
 		//Idea:
 
@@ -417,12 +421,18 @@ public:
 		 		
 		//TIPO DE RUIDO HARDCODEADO. Si se quiere usar otro modificar la linea
 		addSnPNoiseToSimulation(pRuido);
-		cout << "ya agrego ruido" << endl;
+		// cout << "ya agrego ruido" << endl;
 
 		//2
-		generarRayos(cantRayos, coordenadasRayos);
 
-		cout << "Rayos y tiempos creados" << endl;
+		if(quieroRandom){
+			vector<pair<pair<double, double>, pair<double, double> > > vecVacio;
+			generarRayos(cantRayos, vecVacio);
+		}else{
+			generarRayos(cantRayos, coordenadasRayos);
+		}
+
+		// cout << "Rayos y tiempos creados" << endl;
 
 		//3, 4 y 5
 		Image resImagen = regenerarImagenConDiscretizacion(ordenDeMagnitud);
@@ -430,18 +440,19 @@ public:
 		//"solucion" es otro atributo de TCSimulator para guardar la solucion. 
 		//6
 		vector<double> resVector = solucion;
-		cout << "sistema resuelto. " << endl;
+		// cout << "sistema resuelto. " << endl;
 
 		//Image ya no tiene un metodo para guardar. hay que convertir el csv a png con script de la catedra
 		//resImagen->SaveImage(pathSaving, PPM_LOADER_PIXEL_TYPE_RGB_8B);
 
 
-		cout << "imagen creada. " << endl;
+		// cout << "imagen creada. " << endl;
 
 
 		return resVector;
 
 	}
+
 
 	vector<double> obtenerVectorImageMatrix(){
 

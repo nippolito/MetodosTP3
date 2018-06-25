@@ -118,7 +118,7 @@ void insertarElemento(Rala& A, int fila, int columna, double valor ){
 // crea en At la matriz transpuesta de A
 // PRECONDICION: A y At aunque vacias, deben tener las dimensiones correctas.
 void createTranspose(Rala& A, Rala& At){
-	cout<< "CREATE TRASNSPOSE --> " << endl;
+	// cout<< "CREATE TRASNSPOSE --> " << endl;
 	int n = A.n;
 	for(int i = 0; i < n ; i ++){
 		for(map<int,double>::iterator it = A.conex[i].begin() ; it != (A.conex[i]).end(); it ++){
@@ -130,7 +130,7 @@ void createTranspose(Rala& A, Rala& At){
 // crea matriz identidad necesaria para el cálculo del pageRank
 //Ahora puede ser la identidad no cuadrada
 Rala CrearIdentidad(int n, int m ){
-	cout<< "CREATE IDENTIDAD--> " << endl;
+	// cout<< "CREATE IDENTIDAD--> " << endl;
 	Rala res = Rala(n,m);
 	int mayor = max(n,m);
 	for(int i = 0 ; i < mayor; i++){
@@ -145,7 +145,7 @@ Rala CrearIdentidad(int n, int m ){
 
 // suma las matrices A y B y devuelve la suma en C
 void sumaMatricial(Rala& A, Rala& B, Rala& C){
-	cout<< "SUMA MATRICIAL --> " << endl;
+	// cout<< "SUMA MATRICIAL --> " << endl;
 	if(A.n != B.n || A.m != B.m){
 		cout<< "Error de dimensiones al sumar matrices no compatibles!" << endl;
 		return;
@@ -306,7 +306,7 @@ void swapearPivotConCol(Rala& A, vector<double> & conjunta, int pivot, int col){
 }
 
 void eliminacionGaussiana(Rala & A, vector<double> & conjunta){
-	cout << "ELIMINACINO GAUSSIANA -->" << endl;
+	// cout << "ELIMINACINO GAUSSIANA -->" << endl;
 	int n = A.n ;
 	long long int entra = 0;
 	long long int noentra = 0;
@@ -333,7 +333,7 @@ void tieneCerosEnLaDiagonal(Rala& A){
 
 	for(int i = 0 ; i < n; i++){
 		if(A.conex[i].find(i) == A.conex[i].end()){
-			cout << "TIENE CEROS EN LA DIAGONAL DESPUES DE ELIMINACION GAUSSIANA" << endl;
+			// cout << "TIENE CEROS EN LA DIAGONAL DESPUES DE ELIMINACION GAUSSIANA" << endl;
 			return;
 		}
 	}
@@ -346,7 +346,7 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 
 	eliminacionGaussiana(A, conjunta);
 
-	cout << "pasa eliminacion gaussiana" << endl;
+	// cout << "pasa eliminacion gaussiana" << endl;
 
 	tieneCerosEnLaDiagonal(A);
 
@@ -382,7 +382,7 @@ void solveLinearEquations(Rala& A, vector<double> & conjunta, vector<double> & r
 //A, B: MATRICES A MULTIPLICAR
 //C: MATRIZ RESULTADO DEBE TENER LAS DIMENSIONES CORRECTAS (aunque como es rala, basta con que C.n sea igual que A.n)
 void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
-	cout<< "MULTIPLICACION MATRICIAL --> " << endl;
+	// cout<< "MULTIPLICACION MATRICIAL --> " << endl;
 	int nA = A.n;
 	if(A.m != B.n || A.n != C.n || B.m != C.m){
 		
@@ -395,7 +395,7 @@ void multiplicacionMatricial(Rala& A, Rala& B, Rala& C){
 	//Ahora transp tiene:
 	//transp.conex.size = cantidad de columnas
 	int maxColumnaB = transp.n;
-	cout<< "MULTIPLICANDO MATRICES --> " << endl;
+	// cout<< "MULTIPLICANDO MATRICES --> " << endl;
 	//Itero por las i filas de A
 	for(int i = 0; i < nA; i++){
 		for(int j = 0 ; j < maxColumnaB ; j ++){
@@ -480,7 +480,12 @@ void generarCSVVector(vector<double> V, string name){
 	ata.close();
 }
 
-
+void cappearImagen(vector<double>& imagen){
+	for(int i = 0; i < imagen.size(); i++){
+		if(imagen[i] < 0) imagen[i] = 0;
+		if(imagen[i] > 255) imagen[i] = 255;
+	}
+}
 
 //Resolver CM: AtAx = Atb;
 vector<double> resolverCM(Rala& A, vector<double>& b){
@@ -490,13 +495,13 @@ vector<double> resolverCM(Rala& A, vector<double>& b){
 	Rala AtA(A.m, A.m);
 	
 	createTranspose(A, At);
-	cout <<"bk1" << endl;
+	// cout <<"bk1" << endl;
 	multiplicacionPorVector(At, b, Atb);
-	cout <<"bk2" << endl;
+	// cout <<"bk2" << endl;
 	multiplicacionMatricial(At, A, AtA);
-	cout <<"bk3" << endl;
+	// cout <<"bk3" << endl;
 	solveLinearEquations(AtA, Atb, x);
-	cout <<"bk5" << endl;
+	// cout <<"bk5" << endl;
 
 	//generarCSVVector(x, "3_solucion");
 
