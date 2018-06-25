@@ -12,8 +12,7 @@
 using namespace std;
 
 // función para randoms en double
-double fRand(double fMin, double fMax)
-{
+double fRand(double fMin, double fMax){
     double f = (double)rand() / RAND_MAX;
     return fMin + f * (fMax - fMin);
 }
@@ -107,9 +106,6 @@ vector<double> csvToVector(string path){
 
     return res;
 }
-
-
-
 
 void generarCSVVectorPairPair(vector<pair<pair<double, double>, pair<double, double> > > V, string name){
 	ofstream ata;
@@ -594,6 +590,9 @@ void testRayosCruzadosTomosCatedra(int kMax, int ordenMagnitud){
 	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
 
 	string path1 = "exp_nipo/in/tomo.csv";
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+
+	vector<double> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
 
 	TCSimulator Simulator1(path1, "exp_nipo/out/exp_cruzados/out1.csv");
 
@@ -638,6 +637,9 @@ void testRayosFijosTomosCatedra(int kMax, int ordenMagnitud){
 	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
 
 	string path1 = "exp_nipo/in/tomo.csv";
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+
+	vector<double> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
 
 	TCSimulator Simulator1(path1, "exp_nipo/out/exp_fijos/out1.csv");
 
@@ -685,6 +687,9 @@ void testRayosAleatorios(int kMax, int ordenMagnitud){
 	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
 
 	string path1 = "exp_nipo/in/tomo.csv";
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+
+	vector<double> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
 
 	TCSimulator Simulator1(path1, "exp_nipo/out/exp_aleatorios/out1.csv");
 
