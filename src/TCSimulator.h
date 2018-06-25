@@ -260,6 +260,7 @@ public:
 	}
 
 	void escribirCsv(std::vector<vector<int> >& image){
+		cout << "el saving path es" << endl;
 		fstream sal(savingPath, ios::out);
 		int n = image.size();
 		int m = image[0].size();
@@ -297,7 +298,9 @@ public:
 		solucion = imagenAplanada;
 		cout << "bk6" << endl;
 		vector<vector<int>> imagenDesAplanada = desAplanarImagen(imagenAplanada, getHeight()/ordenDeMagnitud, getWidth()/ordenDeMagnitud);
+		cout << "bk6.1" << endl;
 		Image newImage (imagenDesAplanada, getHeight()/ordenDeMagnitud,  getWidth()/ordenDeMagnitud);
+		cout << "bk6.2" << endl;
 		escribirCsv(imagenDesAplanada);
 		cout << "bk7" << endl;
 		return newImage;
@@ -329,9 +332,6 @@ public:
 
 
 
-
-
-
 	//Agregar ruido con distribucion salt & pepper, paso p probabilidad como argumento y defino t = 1-p,
 	//iterando sobre los pixeles obtengo un numero random r y si p<r<t entonces el pixel se mantiene igual,
 	//si no, r<p => pixel=negro, r>t => pixel=blanco 
@@ -339,6 +339,8 @@ public:
 		srand (time(NULL));
 				
 		double thresh = 1 - p;
+		int n = imageMatrix.height;
+		int m = imageMatrix.width;
 
 		//Creo un nuevo vector que despues sera la nueva imagen para pisar
 		vector<vector<int> >byteArrayResult(imageMatrix.height, vector<int>(imageMatrix.width));
@@ -347,18 +349,16 @@ public:
 		vector<int >byteArray(imageMatrix.height * imageMatrix.width);
 		vector<int >source(imageMatrix.height * imageMatrix.width);
 
-		//Primero plancho el imageBuffer asi trabajo mejor
-		int sourceIndex = 0;
-		for (int i = 0; i < imageMatrix.height; ++i)
-		{
-			for (int j = 0; j < imageMatrix.width; ++j)
-			{
-				source[sourceIndex] = imageMatrix.imageBuffer[i][j];
-				sourceIndex++;
-			}
-		}
-
-
+		//Primero plancho el imageBuffer asi trabajo mejor, meh
+		//int sourceIndex = 0;
+		//for (int i = 0; i < imageMatrix.height; ++i)
+		//{
+		//	for (int j = 0; j < imageMatrix.width; ++j)
+		//	{
+		//		source[sourceIndex] = imageMatrix.imageBuffer[i][j];
+		//		sourceIndex++;
+		//	}
+		//}
 		for (int i = 0; i < (imageMatrix.height); ++i)
 		{
 			for (int j = 0; j < (imageMatrix.width); ++j)
@@ -366,40 +366,22 @@ public:
 				double r = (double) rand() / (RAND_MAX);
 				//cout << r << endl;
 				if (r<p){
-					byteArray[i* imageMatrix.width * 3 + j * 3] = 0;
-					byteArray[i* imageMatrix.width * 3 + j * 3 + 1] = 0;
-					byteArray[i* imageMatrix.width * 3 + j * 3+ 2] = 0;
+					byteArrayResult[i][j] = 0;
 				}
 				else if (thresh<r){
-					byteArray[i* imageMatrix.width * 3 + j * 3] = 255;
-					byteArray[i* imageMatrix.width * 3 + j * 3 + 1] = 255;
-					byteArray[i* imageMatrix.width * 3 + j * 3 + 2] = 255;
+					byteArrayResult[i][j] = 255;
 				}
 				else{
-					byteArray[i* imageMatrix.width * 3 + j * 3] = source[i * imageMatrix.width *3+ j * 3];
-					byteArray[i* imageMatrix.width * 3 + j * 3 + 1] = source[i * imageMatrix.width *3+ j * 3 + 1];
-					byteArray[i* imageMatrix.width * 3 + j * 3+ 2] = source[i * imageMatrix.width *3+ j * 3+ 2];
-					
+					byteArrayResult[i][j] = imageMatrix.imageBuffer[i][j];
 				}
 				
 			}
 		}
-
-		//Convierto el resultado en vector de vectores
-		int byteArrayIndex = 0;
-		for (int i = 0; i < imageMatrix.height; ++i)
-		{
-			for (int j = 0; j < imageMatrix.width; ++j)
-			{
-				byteArrayResult[i][j] = byteArray[byteArrayIndex];
-				byteArrayIndex++;
-			}
-		}
-
-
-
-		imageMatrix.imageBuffer = byteArrayResult;
+		
+		imageMatrix = Image (byteArrayResult, n, m);
+		
 		//Ancho y alto se conservan
+		
 }
 
 
