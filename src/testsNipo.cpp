@@ -56,8 +56,8 @@ void mostrarMatrizNipo(vector<vector<double> >& matriz){
 	}
 }
 
-vector<double> aplanarImagen(vector<vector<double> > vecEntrada){
-	vector<double> res;
+vector<int> aplanarImagen(vector<vector<int> > vecEntrada){
+	vector<int> res;
 	for(int i = 0; i < vecEntrada.size(); i++){
 		for(int j = 0; j < vecEntrada[i].size(); j++){
 			res.push_back(vecEntrada[i][j]);
@@ -66,20 +66,20 @@ vector<double> aplanarImagen(vector<vector<double> > vecEntrada){
 	return res;
 }
 
-int llenarRenglonNipo(vector<double>& pixeles, string renglon){
+int llenarRenglonNipo(vector<int>& pixeles, string renglon){
 	int n = renglon.length();
 	int lastComa = 0 ;
 	for(int i = 0 ; i < n ; i ++){
 		if(renglon[i] == ','){
-			pixeles.push_back(stod(renglon.substr(lastComa,i-lastComa)));
+			pixeles.push_back(stoi(renglon.substr(lastComa,i-lastComa)));
 		 	lastComa = i+1;
 		}
 	}
-	pixeles.push_back(stod(renglon.substr(lastComa,n-lastComa)));
+	pixeles.push_back(stoi(renglon.substr(lastComa,n-lastComa)));
 	return pixeles.size();
 }
 
-vector<double> csvToVector(string path){
+vector<int> csvToVector(string path){
 	string pathF = path+".csv";
 	filebuf fb;
 	fb.open (pathF,std::ios::in);
@@ -94,15 +94,15 @@ vector<double> csvToVector(string path){
         cantDeRenglones ++;
     }
 
-    vector<vector<double> > pixeles;
+    vector<vector<int> > pixeles;
     for(int i = 0 ;i < cantDeRenglones; i++){
-    	pixeles.push_back(std::vector<double> ());
+    	pixeles.push_back(std::vector<int> ());
     }
     for(int i = 0 ;i < cantDeRenglones; i ++){
     	cantElementosPorRenglon = llenarRenglonNipo(pixeles[i], renglones[i]);
     }
 
-    vector<double> res = aplanarImagen(pixeles);
+    vector<int> res = aplanarImagen(pixeles);
 
     return res;
 }
@@ -144,7 +144,7 @@ void mostrarVectorPairPairDoubleNipo(vector<pair<pair<double, double>, pair<doub
 	cout << endl;
 }
 
-double ECM(vector<double> v1, vector<double> v2){
+double ECM(vector<int> v1, vector<int> v2){
 	double res = 0;
 	for(int i = 0; i < v1.size(); i++){
 		res += pow((v1[i] - v2[i]), 2);
@@ -152,6 +152,30 @@ double ECM(vector<double> v1, vector<double> v2){
 	res = res / v1.size();
 	return res;
 }
+
+int pasarDe16a8Nipo(int num){
+	return num * 255 / 65235;
+}
+
+int pasarDe8a16Nipo(int num){
+	return num * 65235 / 255;
+}
+
+vector<int> pasarVectorDe16a8Nipo(vector<int>& vec){
+	vector<int> res;
+	for(int i = 0; i < vec.size(); i++){
+		res.push_back(pasarDe16a8Nipo(vec[i]));
+	}
+	return res;
+} 
+
+vector<int> pasarVectorDe8a16Nipo(vector<int>& vec){
+	vector<int> res;
+	for(int i = 0; i < vec.size(); i++){
+		res.push_back(pasarDe8a16Nipo(vec[i]));
+	}
+	return res;
+} 
 
 // m pixeles de altura, n pixeles de ancho
 // genera dado un punto fijo al azar en el algún extremo
@@ -511,8 +535,8 @@ void verSiOpuestosBien(){
 // parece que voy a tener que llegar a más del 200% porque está jodido esto.
 
 void testsECM(){
-	vector<double> vector1(3, 0.0);
-	vector<double> vector2(3, 0.0);
+	vector<int> vector1(3, 0);
+	vector<int> vector2(3, 0);
 	vector1[0] = 2;
 	vector1[1] = 3;
 	vector1[2] = 1;
@@ -530,16 +554,16 @@ void testsECM(){
 void testRayosOpuestosTomosCatedra(int kMax, int ordenMagnitud){
 	cout << "Arranca rayos opuestos" << endl;
 
-	fstream sal1("exp_nipo/opuestosTomo1.csv", ios::out);
+	fstream sal1("exp_nipo/opuestosTomo1_capFinal.csv", ios::out);
 
-	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	sal1 << "m,n,pctjeRayos,ECM8bits,ECM16bits,tiempo" << endl;
 	string path1 = "exp_nipo/in/tomo.csv";
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 
-	vector<double> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
-	// mostrarVector(imagenOriginalReducida);
+	vector<int> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
+	// imagenOriginalReducida está en 8 bits
 
-	TCSimulator Simulator1(path1, "exp_nipo/out/exp_opuestos/out1.csv");
+	TCSimulator Simulator1(path1, "exp_nipo/out/exp_opuestos/out1CapPro.csv");
 
 	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (2 * ordenMagnitud);
 
@@ -566,10 +590,20 @@ void testRayosOpuestosTomosCatedra(int kMax, int ordenMagnitud){
 			end = std::chrono::system_clock::now();
 			std::chrono::duration<double, std::milli> elapsed_seconds = end-start;
 
-			// acá llamo a ECM comparando el vector original con el vector resultado. Faltaría discretizar también el vector original, y ver qué onda la discretización
-			double ecm1 = ECM(imagenOriginalReducida, nuevaImagen);
+			vector<int> nuevaImagenLuegoDeParsear = csvToVector("exp_nipo/out/exp_opuestos/out1CapPro");
+			// en nuevaImagenLuegoDeParsear tengo la nueva en 16 bits
 
-			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << elapsed_seconds.count() << endl;
+			// calculo ECM 8 bits convirtiendo nueva a 8 bits
+			vector<int> nuevaImagenLuegoDeParsear8Bits = pasarVectorDe16a8Nipo(nuevaImagenLuegoDeParsear);
+			double ecm1 = ECM(imagenOriginalReducida, nuevaImagenLuegoDeParsear8Bits);
+
+			// calculo ECM 16 bits convirtiendo originalReducida a 16 bits
+			vector<int> originalReducida16Bits = pasarVectorDe8a16Nipo(imagenOriginalReducida);
+			double ecm2 = ECM(originalReducida16Bits, nuevaImagenLuegoDeParsear);
+
+			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << ecm2 << "," << elapsed_seconds.count() << endl;
+
+
 
 			// reseteo simulador
 			Simulator1.resetSimulator();
@@ -585,16 +619,16 @@ void testRayosOpuestosTomosCatedra(int kMax, int ordenMagnitud){
 void testRayosCruzadosTomosCatedra(int kMax, int ordenMagnitud){
 	cout << "Arranca rayos cruzados" << endl;
 
-	fstream sal1("tests_nipo/cruzadosTomo1.csv", ios::out);
+	fstream sal1("exp_nipo/cruzadosTomo1_capFinal.csv", ios::out);
 
-	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	sal1 << "m,n,pctjeRayos,ECM8bits,ECM16bits,tiempo" << endl;
 
 	string path1 = "exp_nipo/in/tomo.csv";
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 
-	vector<double> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
+	vector<int> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
 
-	TCSimulator Simulator1(path1, "exp_nipo/out/exp_cruzados/out1.csv");
+	TCSimulator Simulator1(path1, "exp_nipo/out/exp_cruzados/out1_capPro.csv");
 
 	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (2 * ordenMagnitud);
 
@@ -615,9 +649,18 @@ void testRayosCruzadosTomosCatedra(int kMax, int ordenMagnitud){
 			end = std::chrono::system_clock::now();
 			std::chrono::duration<double, std::milli> elapsed_seconds = end-start;
 
-			double ecm1 = ECM(imagenOriginalReducida, nuevaImagen);
+			vector<int> nuevaImagenLuegoDeParsear = csvToVector("exp_nipo/out/exp_cruzados/out1_capPro");
+			// en nuevaImagenLuegoDeParsear tengo la nueva en 16 bits
 
-			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << elapsed_seconds.count() << endl;
+			// calculo ECM 8 bits convirtiendo nueva a 8 bits
+			vector<int> nuevaImagenLuegoDeParsear8Bits = pasarVectorDe16a8Nipo(nuevaImagenLuegoDeParsear);
+			double ecm1 = ECM(imagenOriginalReducida, nuevaImagenLuegoDeParsear8Bits);
+
+			// calculo ECM 16 bits convirtiendo originalReducida a 16 bits
+			vector<int> originalReducida16Bits = pasarVectorDe8a16Nipo(imagenOriginalReducida);
+			double ecm2 = ECM(originalReducida16Bits, nuevaImagenLuegoDeParsear);
+
+			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << ecm2 << "," << elapsed_seconds.count() << endl;
 
 			Simulator1.resetSimulator();
 		}
@@ -632,16 +675,16 @@ void testRayosCruzadosTomosCatedra(int kMax, int ordenMagnitud){
 void testRayosFijosTomosCatedra(int kMax, int ordenMagnitud){
 	cout << "Arranca rayos fijos" << endl;
 
-	fstream sal1("tests_nipo/fijosTomo1.csv", ios::out);
+	fstream sal1("exp_nipo/fijosTomo1_CapFinal.csv", ios::out);
 
-	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	sal1 << "m,n,pctjeRayos,ECM8bits,ECM16bits,tiempo" << endl;
 
 	string path1 = "exp_nipo/in/tomo.csv";
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 
-	vector<double> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
+	vector<int> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
 
-	TCSimulator Simulator1(path1, "exp_nipo/out/exp_fijos/out1.csv");
+	TCSimulator Simulator1(path1, "exp_nipo/out/exp_fijos/out1_capPro.csv");
 
 	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (2 * ordenMagnitud);
 
@@ -663,10 +706,19 @@ void testRayosFijosTomosCatedra(int kMax, int ordenMagnitud){
 			end = std::chrono::system_clock::now();
 			std::chrono::duration<double, std::milli> elapsed_seconds = end-start;
 
-			double ecm1 = ECM(imagenOriginalReducida, nuevaImagen);
+			vector<int> nuevaImagenLuegoDeParsear = csvToVector("exp_nipo/out/exp_fijos/out1_capPro");
+			// en nuevaImagenLuegoDeParsear tengo la nueva en 16 bits
 
-			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << elapsed_seconds.count() << endl;
+			// calculo ECM 8 bits convirtiendo nueva a 8 bits
+			vector<int> nuevaImagenLuegoDeParsear8Bits = pasarVectorDe16a8Nipo(nuevaImagenLuegoDeParsear);
+			double ecm1 = ECM(imagenOriginalReducida, nuevaImagenLuegoDeParsear8Bits);
 
+			// calculo ECM 16 bits convirtiendo originalReducida a 16 bits
+			vector<int> originalReducida16Bits = pasarVectorDe8a16Nipo(imagenOriginalReducida);
+			double ecm2 = ECM(originalReducida16Bits, nuevaImagenLuegoDeParsear);
+
+			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << ecm2 << "," << elapsed_seconds.count() << endl;
+			
 			Simulator1.resetSimulator();
 		}
 	}
@@ -682,16 +734,16 @@ void testRayosFijosTomosCatedra(int kMax, int ordenMagnitud){
 void testRayosAleatorios(int kMax, int ordenMagnitud){
 	cout << "Arranca rayos aleatorios" << endl;
 
-	fstream sal1("tests_nipo/aleatoriosTomo1.csv", ios::out);
+	fstream sal1("exp_nipo/aleatoriosTomo1_capPro.csv", ios::out);
 
-	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	sal1 << "m,n,pctjeRayos,ECM8bits,ECM16bits,tiempo" << endl;
 
 	string path1 = "exp_nipo/in/tomo.csv";
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 
-	vector<double> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
+	vector<int> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
 
-	TCSimulator Simulator1(path1, "exp_nipo/out/exp_aleatorios/out1.csv");
+	TCSimulator Simulator1(path1, "exp_nipo/out/exp_aleatorios/out1_capPro.csv");
 
 	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (2 * ordenMagnitud);
 
@@ -712,10 +764,19 @@ void testRayosAleatorios(int kMax, int ordenMagnitud){
 			end = std::chrono::system_clock::now();
 			std::chrono::duration<double, std::milli> elapsed_seconds = end-start;
 
-			double ecm1 = ECM(imagenOriginalReducida, nuevaImagen);
+			vector<int> nuevaImagenLuegoDeParsear = csvToVector("exp_nipo/out/exp_aleatorios/out1_capPro");
+			// en nuevaImagenLuegoDeParsear tengo la nueva en 16 bits
 
-			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << elapsed_seconds.count() << endl;
+			// calculo ECM 8 bits convirtiendo nueva a 8 bits
+			vector<int> nuevaImagenLuegoDeParsear8Bits = pasarVectorDe16a8Nipo(nuevaImagenLuegoDeParsear);
+			double ecm1 = ECM(imagenOriginalReducida, nuevaImagenLuegoDeParsear8Bits);
 
+			// calculo ECM 16 bits convirtiendo originalReducida a 16 bits
+			vector<int> originalReducida16Bits = pasarVectorDe8a16Nipo(imagenOriginalReducida);
+			double ecm2 = ECM(originalReducida16Bits, nuevaImagenLuegoDeParsear);
+
+			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << ecm2 << "," << elapsed_seconds.count() << endl;
+			
 			Simulator1.resetSimulator();
 		}
 	}
@@ -812,6 +873,9 @@ int main(){
 	// testTomo();
 	// vector<double> carlos =  csvToVector("asd");
 	// mostrarVector(carlos);
-	// testRayosOpuestosTomosCatedra(20, 4);
+	testRayosOpuestosTomosCatedra(20, 4);
+	testRayosCruzadosTomosCatedra(20, 4);
+	testRayosFijosTomosCatedra(20, 4);
+	testRayosAleatorios(20, 4);
 	return 0;
 }

@@ -34,7 +34,29 @@ public:
 
 //--------------------------------------------------------FUNCIONES PARA MOSTRAR MATRICES
 
+void mostrarMatrizInt(vector<vector<int> >& matriz){
+	int n = matriz.size();
+	int m = matriz[0].size();
+
+	for (int i = 0; i < n; ++i)
+	{
+		for (int j = 0; j < m; ++j)
+		{
+			cout << matriz[i][j] << " " ;
+		}
+		cout << endl;
+	}
+}
+
 void mostrarVector(vector<double> x){
+	cout << "[";
+	for(int k = 0 ; k < x.size(); k++){
+		cout << x[k] << ", " ;
+	}
+	cout << "]" << endl;
+}
+
+void mostrarVectorInt(vector<int>& x){
 	cout << "[";
 	for(int k = 0 ; k < x.size(); k++){
 		cout << x[k] << ", " ;
