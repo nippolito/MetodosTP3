@@ -39,6 +39,7 @@ struct Image{
 	int width;
 	vector<vector<int> > imageBuffer;
 
+
 	Image(vector<vector<int>> image, int height, int width){
 		this->height = height;
 		this->width = width;
@@ -55,10 +56,17 @@ public:
 	
 	//Properties
 	Image imageMatrix;
-	vector<Rala> rayos;
+	vector<Rala> rayos;	
 	vector<double> tiempos;
 	vector<double> solucion;
 	string savingPath;
+	int max_vel_registrada = 0;
+	int min_vel_registrada = 255;
+
+	// Experimentacion
+	vector<std::vector<int> > rayos_exp;
+	vector<vector<int> > rayos_exp_reducidos;
+
 
 
 	int llenarRenglon(vector<int>& pixeles, string renglon){
@@ -66,8 +74,13 @@ public:
 		int lastComa = 0 ;
 		for(int i = 0 ; i < n ; i ++){
 			if(renglon[i] == ','){
-				pixeles.push_back(stoi(renglon.substr(lastComa,i-lastComa)));
+				int vel = stoi(renglon.substr(lastComa,i-lastComa));
+				pixeles.push_back(vel);
 			 	lastComa = i+1;
+
+			 	//
+			 	max_vel_registrada = max_vel_registrada > vel ? max_vel_registrada : vel;
+			 	min_vel_registrada = min_vel_registrada < vel ? min_vel_registrada : vel;
 			}
 		}
 		pixeles.push_back(stoi(renglon.substr(lastComa,n-lastComa)));
@@ -102,9 +115,12 @@ public:
 	    }
 
 	    imageMatrix = Image (pixeles, cantDeRenglones, cantElementosPorRenglon);
-	    // cout << "TAMAÑOS DE IMAGENES" << endl;
-	    // cout << "alto " << cantDeRenglones << endl;
-	    // cout << "ancho " <<  cantElementosPorRenglon << endl;
+
+	    //
+	    rayos_exp = vector<vector<int> >();
+	    for(int i = 0 ; i < imageMatrix.height; i ++){
+	    	rayos_exp.push_back(vector<int> (imageMatrix.width,0));
+    	}
 	}
 
 	TCSimulator(){
@@ -156,6 +172,8 @@ public:
                           for (; j < k; j++){
                                   //cout << i << " " << j << endl;
                                   insertarElemento(distances,j, i,  1);
+                                  //
+                                  rayos_exp[j][i] += 1;
                           }
                   }
           }
@@ -172,6 +190,8 @@ public:
                           for (; j > k; j--)
                           {
                                   insertarElemento(distances, j-1, i , 1);
+                                  //
+                                  rayos_exp[j-1][i] += 1;
                           }
                           //cout << "\n" << endl;
                   }
@@ -262,7 +282,7 @@ public:
 			nuevaImagen.push_back(std::vector<int> ());
 			for(int j = 0 ; j < m ; j++){
 				//cout << "(" << i <<" , " << j << ")" << endl;
-				nuevaImagen[i].push_back(iamgenAplanada[i*m + j]);
+				nuevaImagen[i].push_back(iamgenAplanada[i*m + j] + 0.4999);
 			}
 		}
 		return nuevaImagen;
@@ -292,7 +312,7 @@ public:
 		max = max + min;
 		for(int i = 0 ; i < n ; i ++){
 			for(int j = 0 ; j < m ; j++){
-				image[i][j] = ((double)(image[i][j]+min)/(double)max) * 65235.0;
+				image[i][j] = (((double)(image[i][j]+min)/(double)max) * (double)pasarDe8a16(max_vel_registrada - min_vel_registrada)) + pasarDe8a16(min_vel_registrada);
 			}
 		}
 	}
@@ -305,10 +325,9 @@ public:
 		return num < 0 ? 0 : num > 255 ? 255 : num;
 	}
 
-	void escribirCsv(std::vector<vector<int> >& image){
-		parsearEn16versionPro(image);
+	void escribirCsv(std::vector<vector<int> >& image, string path){
 		// cout << "el saving path es" << endl;
-		fstream sal(savingPath, ios::out);
+		fstream sal(path, ios::out);
 		int n = image.size();
 		int m = image[0].size();
 
@@ -327,6 +346,7 @@ public:
 
 
 	Image regenerarImagenConDiscretizacion(int ordenDeMagnitud){
+
 		int n = rayos.size();
 		Rala A = Rala(n, getWidth()/ordenDeMagnitud* getHeight()/ordenDeMagnitud);
 		A.conex = vector< map<int, double> >();
@@ -346,11 +366,14 @@ public:
 		// cappearImagen(imagenAplanada);
 		solucion = imagenAplanada;
 		// cout << "bk6" << endl;
-		vector<vector<int>> imagenDesAplanada = desAplanarImagen(imagenAplanada, getHeight()/ordenDeMagnitud, getWidth()/ordenDeMagnitud);
+		vector<vector<int> > imagenDesAplanada = desAplanarImagen(imagenAplanada, getHeight()/ordenDeMagnitud, getWidth()/ordenDeMagnitud);
 		// cout << "bk6.1" << endl;
 		Image newImage (imagenDesAplanada, getHeight()/ordenDeMagnitud,  getWidth()/ordenDeMagnitud);
 		// cout << "bk6.2" << endl;
-		escribirCsv(imagenDesAplanada);
+		parsearEn16versionPro(imagenDesAplanada);
+		escribirCsv(imagenDesAplanada,savingPath);
+
+		escribirCsv(rayos_exp, "rayos_out/tuvieja.csv");
 		// cout << "bk7" << endl;
 		return newImage;
 	}

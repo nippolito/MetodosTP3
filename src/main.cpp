@@ -7,6 +7,7 @@
 #include <string>
 #include <chrono>
 #include "matrizRala.h"
+#include <algorithm> 
 
 
 using namespace std;
@@ -44,17 +45,18 @@ void pruebaCasoReal_3(){
 	return;
 }
 
+//path imagen / path saving / orden de magnitud / cantidad de rayos
+int main(int argc, char *argv[]){
+	string path = argv[1];
+	string saving_path = argv[2];
+	int magnitud = stoi(argv[3]);
+	int cant_rayos = stoi(argv[4]);
+	TCSimulator Simulator(path, saving_path);
+	//Simulator.logInfoImage();
+	Simulator.generarRayos(cant_rayos, vector<pair<pair<double,double>, pair<double,double> > >());
+	Image imgRes = Simulator.regenerarImagenConDiscretizacion(magnitud);
 
-int main(){
-	//testNoiser();
-
-	//pruebaCasoRealDiscretizando();
-	//testReal();
-	pruebaCasoReal_1();
-	//testJuguete();
-	//pruebaImagenes();
-	//pruebaCasoReal();
-	//pruebaLevantarDCMenCSV();
+	
 	return 0;
 }
 
