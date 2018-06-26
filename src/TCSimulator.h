@@ -102,9 +102,9 @@ public:
 	    }
 
 	    imageMatrix = Image (pixeles, cantDeRenglones, cantElementosPorRenglon);
-	    cout << "TAMAÑOS DE IMAGENES" << endl;
-	    cout << "alto " << cantDeRenglones << endl;
-	    cout << "ancho " <<  cantElementosPorRenglon << endl;
+	    // cout << "TAMAÑOS DE IMAGENES" << endl;
+	    // cout << "alto " << cantDeRenglones << endl;
+	    // cout << "ancho " <<  cantElementosPorRenglon << endl;
 	}
 
 	TCSimulator(){
@@ -122,8 +122,14 @@ public:
 		return imageMatrix.height;
 	}
 
-
-
+	void resetSimulator(){
+		vector<Rala> rayosVacios;
+		rayos = rayosVacios;
+		vector<double> tiemposVacios;
+		tiempos = tiemposVacios;
+		vector<double> solucionVacia;
+		solucion = solucionVacia;
+	}
 
 	void createTCRay(pair<double,double> pixel1, pair<double,double> pixel2, Rala& distances){
           //nos aseguramos que el primer pixel tenga un x menor a pixel2
@@ -298,7 +304,7 @@ public:
 		// cout << "tiempos: " << endl;
 		// mostrarVector(tiempos);
 		vector<double> imagenAplanada =  resolverCM(A, tiempos);
-		cappearImagen(imagenAplanada);
+		// cappearImagen(imagenAplanada);
 		solucion = imagenAplanada;
 		// cout << "bk6" << endl;
 		vector<vector<int>> imagenDesAplanada = desAplanarImagen(imagenAplanada, getHeight()/ordenDeMagnitud, getWidth()/ordenDeMagnitud);
@@ -416,7 +422,6 @@ public:
 
 		int cantRayos = coordenadasRayos.size();
 		
-		
 		//1
 		 		
 		//TIPO DE RUIDO HARDCODEADO. Si se quiere usar otro modificar la linea
@@ -435,6 +440,7 @@ public:
 		// cout << "Rayos y tiempos creados" << endl;
 
 		//3, 4 y 5
+		// cout << "Hay " << rayos.size() << " rayos" << endl;
 		Image resImagen = regenerarImagenConDiscretizacion(ordenDeMagnitud);
 
 		//"solucion" es otro atributo de TCSimulator para guardar la solucion. 
