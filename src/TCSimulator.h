@@ -276,6 +276,27 @@ public:
 		return num * 65235 / 255;
 	}
 
+	void parsearEn16versionPro(std::vector<vector<int> >& image){
+		int min = image[0][0];
+		int max = image[0][0];
+		int n = image.size();
+		int m = image[0].size();
+		for(int i = 0 ; i < n; i++){
+			for(int j = 0 ; j < m ; j++){
+				min = min < image[i][j] ? min : image[i][j];
+				max = max > image[i][j] ? max : image[i][j];
+			}
+		}
+
+	 	min = abs(min);
+		max = max + min;
+		for(int i = 0 ; i < n ; i ++){
+			for(int j = 0 ; j < m ; j++){
+				image[i][j] = ((double)(image[i][j]+min)/(double)max) * 65235.0;
+			}
+		}
+	}
+
 	int parsearEnRango16(int num){
 		return num < 0 ? 0 : num > 65235 ? 65235 : num;
 	}
@@ -285,6 +306,7 @@ public:
 	}
 
 	void escribirCsv(std::vector<vector<int> >& image){
+		parsearEn16versionPro(image);
 		// cout << "el saving path es" << endl;
 		fstream sal(savingPath, ios::out);
 		int n = image.size();
@@ -296,7 +318,7 @@ public:
 			for (int j = 0; j < m; ++j)
 			{
 				string comaOrEnd = j == m-1 ? "" : ","; 
-				int numeroAImprimir = parsearEnRango16(image[i][j]);
+				int numeroAImprimir = image[i][j];
 				sal << numeroAImprimir << comaOrEnd;
 			}
 			sal << "\n";
