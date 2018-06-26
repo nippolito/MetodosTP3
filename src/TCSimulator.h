@@ -268,6 +268,22 @@ public:
 		return nuevaImagen;
 	}
 
+	int pasarDe16a8(int num){
+		return num * 255 / 65235;
+	}
+
+	int pasarDe8a16(int num){
+		return num * 65235 / 255;
+	}
+
+	int parsearEnRango16(int num){
+		return num < 0 ? 0 : num > 65235 ? 65235 : num;
+	}
+
+	int parsearEnRango8(int num){
+		return num < 0 ? 0 : num > 255 ? 255 : num;
+	}
+
 	void escribirCsv(std::vector<vector<int> >& image){
 		// cout << "el saving path es" << endl;
 		fstream sal(savingPath, ios::out);
@@ -280,7 +296,8 @@ public:
 			for (int j = 0; j < m; ++j)
 			{
 				string comaOrEnd = j == m-1 ? "" : ","; 
-				sal << image[i][j] << comaOrEnd;
+				int numeroAImprimir = parsearEnRango16(image[i][j]);
+				sal << numeroAImprimir << comaOrEnd;
 			}
 			sal << "\n";
 		}

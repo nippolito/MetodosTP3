@@ -14,23 +14,43 @@ using namespace std;
 
 
 
-void pruebaCasoReal(){
-	string path = "exp_nipo/test.csv";
-	TCSimulator Simulator(path, "grego_out/tuvieja.csv");
+void pruebaCasoReal_1(){
+	string path = "../imgs_TC_out/tomo.csv";
+	TCSimulator Simulator(path, "grego_out/tomo_128x128_ord4_lev8_cap16.csv");
 	//Simulator.logInfoImage();
-	Simulator.generarRayos(2000, vector<pair<pair<double,double>, pair<double,double> > >());
-	Image imgRes = Simulator.regenerarImagenConDiscretizacion(1);
-
+	Simulator.generarRayos(10000, vector<pair<pair<double,double>, pair<double,double> > >());
+	Image imgRes = Simulator.regenerarImagenConDiscretizacion(4);
 
 	return;
 }
+
+void pruebaCasoReal_2(){
+	string path = "../imgs_TC_out/tomo.csv";
+	TCSimulator Simulator(path, "grego_out/tomo_128x128_ord4_lev16_cap16.csv");
+	//Simulator.logInfoImage();
+	Simulator.generarRayos(10000, vector<pair<pair<double,double>, pair<double,double> > >());
+	Image imgRes = Simulator.regenerarImagenConDiscretizacion(4);
+
+	return;
+}
+
+void pruebaCasoReal_3(){
+	string path = "../imgs_TC_out/tomo.csv";
+	TCSimulator Simulator(path, "grego_out/tomo_128x128_ord4_lev8_cap8.csv");
+	//Simulator.logInfoImage();
+	Simulator.generarRayos(10000, vector<pair<pair<double,double>, pair<double,double> > >());
+	Image imgRes = Simulator.regenerarImagenConDiscretizacion(4);
+
+	return;
+}
+
 
 int main(){
 	//testNoiser();
 
 	//pruebaCasoRealDiscretizando();
 	//testReal();
-	pruebaCasoReal();
+	pruebaCasoReal_1();
 	//testJuguete();
 	//pruebaImagenes();
 	//pruebaCasoReal();
