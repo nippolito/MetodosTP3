@@ -581,7 +581,7 @@ void testRayosOpuestosTomosCatedra(int kMax, int ordenMagnitud){
 
 	TCSimulator Simulator1(path1, "exp_nipo/out/exp_opuestos/out1CapPro.csv", "exp_nipo/rayos_out/rayo0");
 
-	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (2 * ordenMagnitud);
+	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (ordenMagnitud * ordenMagnitud);
 
 	for(int i = 0; i <= kMax; i++){
 		cout << "Voy por porcentaje = " << i << endl;
@@ -642,7 +642,7 @@ void testRayosCruzadosTomosCatedra(int kMax, int ordenMagnitud){
 
 	TCSimulator Simulator1(path1, "exp_nipo/out/exp_cruzados/out1_capPro.csv", "exp_nipo/rayos_out/rayo105");
 
-	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (2 * ordenMagnitud);
+	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (ordenMagnitud * ordenMagnitud);
 
 	for(int i = 0; i <= kMax; i++){
 		cout << "Voy por porcentaje = " << i << endl;
@@ -696,7 +696,7 @@ void testRayosFijosTomosCatedra(int kMax, int ordenMagnitud){
 
 	TCSimulator Simulator1(path1, "exp_nipo/out/exp_fijos/out1_capPro.csv", "exp_nipo/rayos_out/rayo210.csv");
 
-	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (2 * ordenMagnitud);
+	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (ordenMagnitud * ordenMagnitud);
 
 	for(int i = 0; i <= kMax; i++){
 		cout << "Voy por porcentaje = " << i << endl;
@@ -739,7 +739,6 @@ void testRayosFijosTomosCatedra(int kMax, int ordenMagnitud){
 
 // Lo mismo que los 3 anteriores
 void testRayosAleatorios(int kMax, int ordenMagnitud){
-	varGlobal = 63;
 	cout << "Arranca rayos aleatorios" << endl;
 
 	fstream sal1("exp_nipo/aleatoriosTomo1_capPro.csv", ios::out);
@@ -753,7 +752,7 @@ void testRayosAleatorios(int kMax, int ordenMagnitud){
 
 	TCSimulator Simulator1(path1, "exp_nipo/out/exp_aleatorios/out1_capPro.csv", "exp_nipo/rayos_out/rayo315.csv");
 
-	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (2 * ordenMagnitud);
+	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (ordenMagnitud * ordenMagnitud);
 
 	for(int i = 0; i <= kMax; i++){
 		cout << "Voy por porcentaje = " << i << endl;
@@ -790,6 +789,319 @@ void testRayosAleatorios(int kMax, int ordenMagnitud){
 
 	sal1.close();
 }
+
+void testRayosOpuestosTomosCatedraRayosYCsv(int kMax, int ordenMagnitud){
+	cout << "Arranca rayos opuestos" << endl;
+
+	string pathEnt = "exp_nipo/in/tomo.csv";
+	string pathSal = "exp_nipo/out/exp_opuestos/csvSalida";
+	string rayosSal = "exp_nipo/rayos_out_posta/opuestos/rayo";
+
+	int cantPixelesDiscretizacion = 25 * 25;
+
+	for(int i = 0; i <= kMax; i++){
+		cout << "Voy por porcentaje = " << i << endl;
+
+		TCSimulator Simulator1(pathEnt, pathSal + to_string(i) + ".csv", rayosSal + to_string(i) + ".csv");
+
+		int cantRayosAct = (int) round((double) cantPixelesDiscretizacion * (10 + i) / 10);
+		int k1 = cantRayosAct / 2;
+
+		cout << cantRayosAct << endl;
+		// me aseguro que k1 siempre sea par para no tener las rectas constantes
+		if(k1 % 2 == 1) k1++;
+
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosOpuestos(Simulator1.getHeight(), Simulator1.getWidth(), k1);
+
+		vector<double> nuevaImagen = Simulator1.obtenerImagenPorRayos(rayosTomo1, 0.1, 4, 0);
+
+	}
+}
+
+void testRayosCruzadosTomosCatedraRayosYCsv(int kMax, int ordenMagnitud){
+	cout << "Arranca rayos cruzados" << endl;
+
+	string pathEnt = "exp_nipo/in/tomo.csv";
+	string pathSal = "exp_nipo/out/exp_cruzados/csvSalida";
+	string rayosSal = "exp_nipo/rayos_out_posta/cruzados/rayo";
+
+	int cantPixelesDiscretizacion = 25 * 25;
+
+	for(int i = 0; i <= kMax; i++){
+		cout << "Voy por porcentaje = " << i << endl;
+
+		TCSimulator Simulator1(pathEnt, pathSal + to_string(i) + ".csv", rayosSal + to_string(i) + ".csv");
+
+		int cantRayosAct = (int) round((double) cantPixelesDiscretizacion * (10 + i) / 10);
+		int k1 = cantRayosAct / 2;
+
+		cout << cantRayosAct << endl;
+
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosCruzados(Simulator1.getHeight(), Simulator1.getWidth(), k1);
+
+		vector<double> nuevaImagen = Simulator1.obtenerImagenPorRayos(rayosTomo1, 0.1, 4, 0);
+
+	}
+}
+
+void testRayosFijosTomosCatedraRayosYCsv(int kMax, int ordenMagnitud){
+	cout << "Arranca rayos fijos" << endl;
+
+	string pathEnt = "exp_nipo/in/tomo.csv";
+	string pathSal = "exp_nipo/out/exp_fijos/csvSalida";
+	string rayosSal = "exp_nipo/rayos_out_posta/fijos/rayo";
+
+	int cantPixelesDiscretizacion = 25 * 25;
+
+	for(int i = 0; i <= kMax; i++){
+		cout << "Voy por porcentaje = " << i << endl;
+
+		TCSimulator Simulator1(pathEnt, pathSal + to_string(i) + ".csv", rayosSal + to_string(i) + ".csv");
+
+		int cantRayosAct = (int) round((double) cantPixelesDiscretizacion * (10 + i) / 10);
+		int k1 = (int) cantRayosAct / 3 + 1;
+		if(k1 * 3 - 1 < cantRayosAct) k1++;
+
+		cout << cantRayosAct << endl;
+
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosPuntoFijo(Simulator1.getHeight(), Simulator1.getWidth(), k1, 0);
+
+		vector<double> nuevaImagen = Simulator1.obtenerImagenPorRayos(rayosTomo1, 0.1, 4, 0);
+
+	}
+}
+
+void testRayosAleatoriosRayosYCsv(int kMax, int ordenMagnitud){
+	cout << "Arranca rayos aleatorios" << endl;
+
+	string pathEnt = "exp_nipo/in/tomo.csv";
+	string pathSal = "exp_nipo/out/exp_aleatorios/csvSalida";
+	string rayosSal = "exp_nipo/rayos_out_posta/aleatorios/rayo";
+
+	int cantPixelesDiscretizacion = 25 * 25;
+
+	for(int i = 0; i <= kMax; i++){
+		cout << "Voy por porcentaje = " << i << endl;
+
+		TCSimulator Simulator1(pathEnt, pathSal + to_string(i) + ".csv", rayosSal + to_string(i) + ".csv");
+
+		int cantRayosAct = (int) round((double) cantPixelesDiscretizacion * (10 + i) / 10);
+		int k1 = cantRayosAct / 2;
+
+		cout << cantRayosAct << endl;
+
+		vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosCruzados(Simulator1.getHeight(), Simulator1.getWidth(), k1);
+
+		vector<double> nuevaImagen = Simulator1.obtenerImagenPorRayos(rayosTomo1, 0.1, 4, 1);
+
+	}
+}
+
+void testRayosOpuestosTomosCatedraPosta(int kMax, int ordenMagnitud){
+	cout << "Arranca rayos opuestos" << endl;
+
+	fstream sal1("exp_nipo/opuestosTomo1_capFinal.csv", ios::out);
+
+	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+	string path1 = "exp_nipo/in/tomo.csv";
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+
+	vector<int> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
+	// imagenOriginalReducida está en 8 bits
+
+	int cantPixelesDiscretizacion = 25 * 25;
+
+	for(int i = 0; i <= kMax; i++){
+		cout << "Voy por porcentaje = " << i << endl;
+
+		int cantRayosAct = (int) round((double) cantPixelesDiscretizacion * (10 + i) / 10);
+		int k1 = cantRayosAct / 2;
+		// me aseguro que k1 siempre sea par para no tener las rectas constantes
+		if(k1 % 2 == 1) k1++;
+
+		cout << cantRayosAct << endl;
+
+		for(int j = 0; j < 5; j++){
+			cout << "Voy por j = " << j << endl;
+
+			// acá llamo a función de Emi resultora de todo
+
+			TCSimulator Simulator1(path1, "exp_nipo/out/exp_opuestos/out1CapPro.csv");
+
+			vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosOpuestos(Simulator1.getHeight(), Simulator1.getWidth(), k1);
+
+			start = std::chrono::system_clock::now();
+			vector<double> nuevaImagen = Simulator1.obtenerImagenPorRayos(rayosTomo1, 0.1, 4, 0);
+			end = std::chrono::system_clock::now();
+			std::chrono::duration<double, std::milli> elapsed_seconds = end-start;
+
+			vector<int> nuevaImagenLuegoDeParsear = csvToVector("exp_nipo/out/exp_opuestos/out1CapPro");
+			// en nuevaImagenLuegoDeParsear tengo la nueva en 16 bits
+
+			// calculo ECM normalizando ambas imágenes
+			vector<double> nuevaNormalizada = normalizar16BitNipo(nuevaImagenLuegoDeParsear);
+			vector<double> originalReducNormalizada = normalizar8BitNipo(imagenOriginalReducida);
+			double ecm1 = ECM(originalReducNormalizada, nuevaNormalizada);
+
+			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << elapsed_seconds.count() << endl;
+		}
+	}
+
+	sal1.close();
+}
+
+void testRayosCruzadosTomosCatedraPosta(int kMax, int ordenMagnitud){
+	cout << "Arranca rayos cruzados" << endl;
+
+	fstream sal1("exp_nipo/cruzadosTomo1_capFinal.csv", ios::out);
+
+	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+
+	string path1 = "exp_nipo/in/tomo.csv";
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+
+	vector<int> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
+
+	int cantPixelesDiscretizacion = 25 * 25;
+
+	for(int i = 0; i <= kMax; i++){
+		cout << "Voy por porcentaje = " << i << endl;
+
+		int cantRayosAct = (int) round((double) cantPixelesDiscretizacion * (10 + i) / 10);
+		int k1 = cantRayosAct / 2;
+
+		for(int j = 0; j < 5; j++){
+			cout << "Voy por j = " << j << endl;
+			// lo hago 5 veces para tomar promedio de tiempos
+
+			TCSimulator Simulator1(path1, "exp_nipo/out/exp_cruzados/out1_capPro.csv");
+
+			vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosCruzados(Simulator1.getHeight(), Simulator1.getWidth(), k1);
+
+			start = std::chrono::system_clock::now();
+			vector<double> nuevaImagen = Simulator1.obtenerImagenPorRayos(rayosTomo1, 0.1, 4, 0);
+			end = std::chrono::system_clock::now();
+			std::chrono::duration<double, std::milli> elapsed_seconds = end-start;
+
+			vector<int> nuevaImagenLuegoDeParsear = csvToVector("exp_nipo/out/exp_cruzados/out1_capPro");
+			// en nuevaImagenLuegoDeParsear tengo la nueva en 16 bits
+
+			// calculo ECM normalizando ambas imágenes
+			vector<double> nuevaNormalizada = normalizar16BitNipo(nuevaImagenLuegoDeParsear);
+			vector<double> originalReducNormalizada = normalizar8BitNipo(imagenOriginalReducida);
+			double ecm1 = ECM(originalReducNormalizada, nuevaNormalizada);
+
+			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << elapsed_seconds.count() << endl;
+		}
+	}
+
+	sal1.close();
+}
+
+void testRayosFijosTomosCatedraPosta(int kMax, int ordenMagnitud){
+	varGlobal = 42;
+	cout << "Arranca rayos fijos" << endl;
+
+	fstream sal1("exp_nipo/fijosTomo1_CapFinal.csv", ios::out);
+
+	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+
+	string path1 = "exp_nipo/in/tomo.csv";
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+
+	vector<int> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
+
+	int cantPixelesDiscretizacion = 25 * 25;
+
+	for(int i = 0; i <= kMax; i++){
+		cout << "Voy por porcentaje = " << i << endl;
+
+		int cantRayosAct = (int) round((double) cantPixelesDiscretizacion * (10 + i) / 10);
+		int k1 = (int) cantRayosAct / 3 + 1;
+		if(k1 * 3 - 1 < cantRayosAct) k1++;
+
+		cout << cantRayosAct << endl;
+
+		for(int j = 0; j < 5; j++){
+			cout << "Voy por j = " << j << endl;
+			// lo hago 5 veces para tomar promedio de tiempos
+
+			TCSimulator Simulator1(path1, "exp_nipo/out/exp_fijos/out1_capPro.csv");
+
+			vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosPuntoFijo(Simulator1.getHeight(), Simulator1.getWidth(), k1, 0);
+
+			start = std::chrono::system_clock::now();
+			vector<double> nuevaImagen = Simulator1.obtenerImagenPorRayos(rayosTomo1, 0.1, 4, 0);
+			end = std::chrono::system_clock::now();
+			std::chrono::duration<double, std::milli> elapsed_seconds = end-start;
+
+			vector<int> nuevaImagenLuegoDeParsear = csvToVector("exp_nipo/out/exp_fijos/out1_capPro");
+			// en nuevaImagenLuegoDeParsear tengo la nueva en 16 bits
+
+			// calculo ECM normalizando ambas imágenes
+			vector<double> nuevaNormalizada = normalizar16BitNipo(nuevaImagenLuegoDeParsear);
+			vector<double> originalReducNormalizada = normalizar8BitNipo(imagenOriginalReducida);
+			double ecm1 = ECM(originalReducNormalizada, nuevaNormalizada);
+
+			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << elapsed_seconds.count() << endl;
+		}
+	}
+
+	sal1.close();
+}
+
+void testRayosAleatoriosPosta(int kMax, int ordenMagnitud){
+	cout << "Arranca rayos aleatorios" << endl;
+
+	fstream sal1("exp_nipo/aleatoriosTomo1_capPro.csv", ios::out);
+
+	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
+
+	string path1 = "exp_nipo/in/tomo.csv";
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+
+	vector<int> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
+
+	int cantPixelesDiscretizacion = 25 * 25;
+
+	for(int i = 0; i <= kMax; i++){
+		cout << "Voy por porcentaje = " << i << endl;
+
+		int cantRayosAct = (int) round((double) cantPixelesDiscretizacion * (10 + i) / 10);
+		int k1 = cantRayosAct / 2;
+
+		cout << cantRayosAct << endl;
+
+		for(int j = 0; j < 5; j++){
+			cout << "Voy por j = " << j << endl;
+			// lo hago 5 veces para tomar promedio de tiempos
+
+			TCSimulator Simulator1(path1, "exp_nipo/out/exp_aleatorios/out1_capPro.csv");
+
+			vector<pair<pair<double, double>, pair<double, double> > > rayosTomo1 = generadorRayosCruzados(Simulator1.getHeight(), Simulator1.getWidth(), k1);
+
+			start = std::chrono::system_clock::now();
+			vector<double> nuevaImagen = Simulator1.obtenerImagenPorRayos(rayosTomo1, 0.1, 4, 1);
+			end = std::chrono::system_clock::now();
+			std::chrono::duration<double, std::milli> elapsed_seconds = end-start;
+
+			vector<int> nuevaImagenLuegoDeParsear = csvToVector("exp_nipo/out/exp_aleatorios/out1_capPro");
+			// en nuevaImagenLuegoDeParsear tengo la nueva en 16 bits
+
+			// calculo ECM normalizando ambas imágenes
+			vector<double> nuevaNormalizada = normalizar16BitNipo(nuevaImagenLuegoDeParsear);
+			vector<double> originalReducNormalizada = normalizar8BitNipo(imagenOriginalReducida);
+			double ecm1 = ECM(originalReducNormalizada, nuevaNormalizada);
+
+			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << elapsed_seconds.count() << endl;
+
+		}
+	}
+
+	sal1.close();
+}
+
+
 
 // ejemplo para iterar los csvs para abrir
 // void correrTestsPracticaEj2(){			// salvo los de entrada 200, son todos correctos.
@@ -880,12 +1192,16 @@ int main(){
 	// testTomo();
 	// vector<double> carlos =  csvToVector("asd");
 	// mostrarVector(carlos);
-	testRayosOpuestosTomosCatedra(20, 4);
-	testRayosCruzadosTomosCatedra(20, 4);
-	testRayosFijosTomosCatedra(20, 4);
-	testRayosAleatorios(20, 4);
+	// testRayosOpuestosTomosCatedraPosta(20, 4);
+	// testRayosCruzadosTomosCatedraPosta(20, 4);
+	// testRayosFijosTomosCatedraPosta(20, 4);
+	testRayosAleatoriosPosta(20, 4);
 	// string guardarRayos = "exp_nipo/rayos_out/rayo";
 	// string final = guardarRayos + to_string(2);
 	// cout << final << endl;
+	// testRayosOpuestosTomosCatedraRayosYCsv(20, 4);
+	// testRayosCruzadosTomosCatedraRayosYCsv(20, 4);
+	// testRayosFijosTomosCatedraRayosYCsv(20, 4);
+	// testRayosAleatoriosRayosYCsv(20, 4);
 	return 0;
 }
