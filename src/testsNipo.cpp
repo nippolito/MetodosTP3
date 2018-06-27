@@ -144,7 +144,7 @@ void mostrarVectorPairPairDoubleNipo(vector<pair<pair<double, double>, pair<doub
 	cout << endl;
 }
 
-double ECM(vector<int> v1, vector<int> v2){
+double ECM(vector<double> v1, vector<double> v2){
 	double res = 0;
 	for(int i = 0; i < v1.size(); i++){
 		res += pow((v1[i] - v2[i]), 2);
@@ -176,6 +176,22 @@ vector<int> pasarVectorDe8a16Nipo(vector<int>& vec){
 	}
 	return res;
 } 
+
+vector<double> normalizar16BitNipo(vector<int>& vec){
+	vector<double> res;
+	for(int i = 0; i < vec.size(); i++){
+		res.push_back((double) vec[i] / 65235);
+	}
+	return res;	
+}
+
+vector<double> normalizar8BitNipo(vector<int>& vec){
+	vector<double> res;
+	for(int i = 0; i < vec.size(); i++){
+		res.push_back((double) vec[i] / 255);
+	}
+	return res;	
+}
 
 // m pixeles de altura, n pixeles de ancho
 // genera dado un punto fijo al azar en el algún extremo
@@ -535,8 +551,8 @@ void verSiOpuestosBien(){
 // parece que voy a tener que llegar a más del 200% porque está jodido esto.
 
 void testsECM(){
-	vector<int> vector1(3, 0);
-	vector<int> vector2(3, 0);
+	vector<double> vector1(3, 0);
+	vector<double> vector2(3, 0);
 	vector1[0] = 2;
 	vector1[1] = 3;
 	vector1[2] = 1;
@@ -556,14 +572,14 @@ void testRayosOpuestosTomosCatedra(int kMax, int ordenMagnitud){
 
 	fstream sal1("exp_nipo/opuestosTomo1_capFinal.csv", ios::out);
 
-	sal1 << "m,n,pctjeRayos,ECM8bits,ECM16bits,tiempo" << endl;
+	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
 	string path1 = "exp_nipo/in/tomo.csv";
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 
 	vector<int> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
 	// imagenOriginalReducida está en 8 bits
 
-	TCSimulator Simulator1(path1, "exp_nipo/out/exp_opuestos/out1CapPro.csv");
+	TCSimulator Simulator1(path1, "exp_nipo/out/exp_opuestos/out1CapPro.csv", "exp_nipo/rayos_out/rayo0");
 
 	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (2 * ordenMagnitud);
 
@@ -593,17 +609,12 @@ void testRayosOpuestosTomosCatedra(int kMax, int ordenMagnitud){
 			vector<int> nuevaImagenLuegoDeParsear = csvToVector("exp_nipo/out/exp_opuestos/out1CapPro");
 			// en nuevaImagenLuegoDeParsear tengo la nueva en 16 bits
 
-			// calculo ECM 8 bits convirtiendo nueva a 8 bits
-			vector<int> nuevaImagenLuegoDeParsear8Bits = pasarVectorDe16a8Nipo(nuevaImagenLuegoDeParsear);
-			double ecm1 = ECM(imagenOriginalReducida, nuevaImagenLuegoDeParsear8Bits);
+			// calculo ECM normalizando ambas imágenes
+			vector<double> nuevaNormalizada = normalizar16BitNipo(nuevaImagenLuegoDeParsear);
+			vector<double> originalReducNormalizada = normalizar8BitNipo(imagenOriginalReducida);
+			double ecm1 = ECM(originalReducNormalizada, nuevaNormalizada);
 
-			// calculo ECM 16 bits convirtiendo originalReducida a 16 bits
-			vector<int> originalReducida16Bits = pasarVectorDe8a16Nipo(imagenOriginalReducida);
-			double ecm2 = ECM(originalReducida16Bits, nuevaImagenLuegoDeParsear);
-
-			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << ecm2 << "," << elapsed_seconds.count() << endl;
-
-
+			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << elapsed_seconds.count() << endl;
 
 			// reseteo simulador
 			Simulator1.resetSimulator();
@@ -617,18 +628,19 @@ void testRayosOpuestosTomosCatedra(int kMax, int ordenMagnitud){
 // 100% hasta kMax, incluyendo a este último (probablemente kMax = 20 y 110% se considere 1) fijando un ruido de 0.1.
 // Todo con la png de la cátedra de 100x100. Compara ECM
 void testRayosCruzadosTomosCatedra(int kMax, int ordenMagnitud){
+	varGlobal = 21;
 	cout << "Arranca rayos cruzados" << endl;
 
 	fstream sal1("exp_nipo/cruzadosTomo1_capFinal.csv", ios::out);
 
-	sal1 << "m,n,pctjeRayos,ECM8bits,ECM16bits,tiempo" << endl;
+	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
 
 	string path1 = "exp_nipo/in/tomo.csv";
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 
 	vector<int> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
 
-	TCSimulator Simulator1(path1, "exp_nipo/out/exp_cruzados/out1_capPro.csv");
+	TCSimulator Simulator1(path1, "exp_nipo/out/exp_cruzados/out1_capPro.csv", "exp_nipo/rayos_out/rayo105");
 
 	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (2 * ordenMagnitud);
 
@@ -652,15 +664,12 @@ void testRayosCruzadosTomosCatedra(int kMax, int ordenMagnitud){
 			vector<int> nuevaImagenLuegoDeParsear = csvToVector("exp_nipo/out/exp_cruzados/out1_capPro");
 			// en nuevaImagenLuegoDeParsear tengo la nueva en 16 bits
 
-			// calculo ECM 8 bits convirtiendo nueva a 8 bits
-			vector<int> nuevaImagenLuegoDeParsear8Bits = pasarVectorDe16a8Nipo(nuevaImagenLuegoDeParsear);
-			double ecm1 = ECM(imagenOriginalReducida, nuevaImagenLuegoDeParsear8Bits);
+			// calculo ECM normalizando ambas imágenes
+			vector<double> nuevaNormalizada = normalizar16BitNipo(nuevaImagenLuegoDeParsear);
+			vector<double> originalReducNormalizada = normalizar8BitNipo(imagenOriginalReducida);
+			double ecm1 = ECM(originalReducNormalizada, nuevaNormalizada);
 
-			// calculo ECM 16 bits convirtiendo originalReducida a 16 bits
-			vector<int> originalReducida16Bits = pasarVectorDe8a16Nipo(imagenOriginalReducida);
-			double ecm2 = ECM(originalReducida16Bits, nuevaImagenLuegoDeParsear);
-
-			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << ecm2 << "," << elapsed_seconds.count() << endl;
+			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << elapsed_seconds.count() << endl;
 
 			Simulator1.resetSimulator();
 		}
@@ -673,18 +682,19 @@ void testRayosCruzadosTomosCatedra(int kMax, int ordenMagnitud){
 // 100% hasta kMax, incluyendo a este último (probablemente kMax = 20 y 110% se considere 1) fijando un ruido de 0.1.
 // Todo con la png de la cátedra de 100x100. Compara ECM
 void testRayosFijosTomosCatedra(int kMax, int ordenMagnitud){
+	varGlobal = 42;
 	cout << "Arranca rayos fijos" << endl;
 
 	fstream sal1("exp_nipo/fijosTomo1_CapFinal.csv", ios::out);
 
-	sal1 << "m,n,pctjeRayos,ECM8bits,ECM16bits,tiempo" << endl;
+	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
 
 	string path1 = "exp_nipo/in/tomo.csv";
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 
 	vector<int> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
 
-	TCSimulator Simulator1(path1, "exp_nipo/out/exp_fijos/out1_capPro.csv");
+	TCSimulator Simulator1(path1, "exp_nipo/out/exp_fijos/out1_capPro.csv", "exp_nipo/rayos_out/rayo210.csv");
 
 	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (2 * ordenMagnitud);
 
@@ -709,16 +719,13 @@ void testRayosFijosTomosCatedra(int kMax, int ordenMagnitud){
 			vector<int> nuevaImagenLuegoDeParsear = csvToVector("exp_nipo/out/exp_fijos/out1_capPro");
 			// en nuevaImagenLuegoDeParsear tengo la nueva en 16 bits
 
-			// calculo ECM 8 bits convirtiendo nueva a 8 bits
-			vector<int> nuevaImagenLuegoDeParsear8Bits = pasarVectorDe16a8Nipo(nuevaImagenLuegoDeParsear);
-			double ecm1 = ECM(imagenOriginalReducida, nuevaImagenLuegoDeParsear8Bits);
+			// calculo ECM normalizando ambas imágenes
+			vector<double> nuevaNormalizada = normalizar16BitNipo(nuevaImagenLuegoDeParsear);
+			vector<double> originalReducNormalizada = normalizar8BitNipo(imagenOriginalReducida);
+			double ecm1 = ECM(originalReducNormalizada, nuevaNormalizada);
 
-			// calculo ECM 16 bits convirtiendo originalReducida a 16 bits
-			vector<int> originalReducida16Bits = pasarVectorDe8a16Nipo(imagenOriginalReducida);
-			double ecm2 = ECM(originalReducida16Bits, nuevaImagenLuegoDeParsear);
+			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << elapsed_seconds.count() << endl;
 
-			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << ecm2 << "," << elapsed_seconds.count() << endl;
-			
 			Simulator1.resetSimulator();
 		}
 	}
@@ -732,18 +739,19 @@ void testRayosFijosTomosCatedra(int kMax, int ordenMagnitud){
 
 // Lo mismo que los 3 anteriores
 void testRayosAleatorios(int kMax, int ordenMagnitud){
+	varGlobal = 63;
 	cout << "Arranca rayos aleatorios" << endl;
 
 	fstream sal1("exp_nipo/aleatoriosTomo1_capPro.csv", ios::out);
 
-	sal1 << "m,n,pctjeRayos,ECM8bits,ECM16bits,tiempo" << endl;
+	sal1 << "m,n,pctjeRayos,ECM,tiempo" << endl;
 
 	string path1 = "exp_nipo/in/tomo.csv";
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 
 	vector<int> imagenOriginalReducida = csvToVector("exp_nipo/in/resize_tomo");
 
-	TCSimulator Simulator1(path1, "exp_nipo/out/exp_aleatorios/out1_capPro.csv");
+	TCSimulator Simulator1(path1, "exp_nipo/out/exp_aleatorios/out1_capPro.csv", "exp_nipo/rayos_out/rayo315.csv");
 
 	int cantPixelesDiscretizacion = Simulator1.getHeight() * Simulator1.getWidth() / (2 * ordenMagnitud);
 
@@ -759,6 +767,8 @@ void testRayosAleatorios(int kMax, int ordenMagnitud){
 			cout << "Voy por j = " << j << endl;
 			// lo hago 5 veces para tomar promedio de tiempos
 
+			// string pathSaveFinal = pathSave + to_string(varSavePathInt);
+
 			start = std::chrono::system_clock::now();
 			vector<double> nuevaImagen = Simulator1.obtenerImagenPorRayos(rayosTomo1, 0.1, 4, 1);
 			end = std::chrono::system_clock::now();
@@ -767,16 +777,13 @@ void testRayosAleatorios(int kMax, int ordenMagnitud){
 			vector<int> nuevaImagenLuegoDeParsear = csvToVector("exp_nipo/out/exp_aleatorios/out1_capPro");
 			// en nuevaImagenLuegoDeParsear tengo la nueva en 16 bits
 
-			// calculo ECM 8 bits convirtiendo nueva a 8 bits
-			vector<int> nuevaImagenLuegoDeParsear8Bits = pasarVectorDe16a8Nipo(nuevaImagenLuegoDeParsear);
-			double ecm1 = ECM(imagenOriginalReducida, nuevaImagenLuegoDeParsear8Bits);
+			// calculo ECM normalizando ambas imágenes
+			vector<double> nuevaNormalizada = normalizar16BitNipo(nuevaImagenLuegoDeParsear);
+			vector<double> originalReducNormalizada = normalizar8BitNipo(imagenOriginalReducida);
+			double ecm1 = ECM(originalReducNormalizada, nuevaNormalizada);
 
-			// calculo ECM 16 bits convirtiendo originalReducida a 16 bits
-			vector<int> originalReducida16Bits = pasarVectorDe8a16Nipo(imagenOriginalReducida);
-			double ecm2 = ECM(originalReducida16Bits, nuevaImagenLuegoDeParsear);
+			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << elapsed_seconds.count() << endl;
 
-			sal1 << Simulator1.getHeight() / ordenMagnitud << "," << Simulator1.getWidth() / ordenMagnitud << "," << i * 10 + 100 << "," << ecm1 << "," << ecm2 << "," << elapsed_seconds.count() << endl;
-			
 			Simulator1.resetSimulator();
 		}
 	}
@@ -877,5 +884,8 @@ int main(){
 	testRayosCruzadosTomosCatedra(20, 4);
 	testRayosFijosTomosCatedra(20, 4);
 	testRayosAleatorios(20, 4);
+	// string guardarRayos = "exp_nipo/rayos_out/rayo";
+	// string final = guardarRayos + to_string(2);
+	// cout << final << endl;
 	return 0;
 }

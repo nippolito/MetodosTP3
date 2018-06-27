@@ -14,6 +14,10 @@ int red=0;
 int green = 1;
 int blue = 2;
 
+int varGlobal = 0;
+int varGlobalINipo = 0;
+int varGlobalJNipo = 0;
+
 struct Recta{
 	double a;
 	double b;
@@ -181,6 +185,22 @@ public:
 		tiempos = tiemposVacios;
 		vector<double> solucionVacia;
 		solucion = solucionVacia;
+		varGlobal++;
+
+		vector<vector<int> > rayosGuardarVacios;
+		vector<vector<int> > rayosReducidosGuardarVacios;
+		rayos_exp = rayosGuardarVacios;
+		rayos_exp = vector<vector<int> >();
+	    for(int i = 0 ; i < imageMatrix.height; i ++){
+	    	rayos_exp.push_back(vector<int> (imageMatrix.width,0));
+    	}
+		// falta la generación del savingPath
+		string guardarRayos = "exp_nipo/rayos_out/rayo";
+		string guardarRayosFinal = guardarRayos + to_string(varGlobal) + ".csv";
+		rayoSavingPath = guardarRayosFinal;
+
+		// string guardarImagen = "exp_nipo/res_out/res" + to_string(varGlobal) + ".csv";
+		// savingPath = guardarImagen;
 	}
 
 	void createTCRay(pair<double,double> pixel1, pair<double,double> pixel2, Rala& distances){
