@@ -64,6 +64,7 @@ public:
 	int min_vel_registrada = 255;
 
 	// Experimentacion
+	string rayoSavingPath = "rayos-generados.csv";
 	vector<std::vector<int> > rayos_exp;
 	vector<vector<int> > rayos_exp_reducidos;
 
@@ -90,6 +91,41 @@ public:
 	 
 
 	TCSimulator(string path, string savingPath){
+		this->savingPath = savingPath;
+		filebuf fb;
+		fb.open (path,std::ios::in);
+		std::istream fs (&fb);
+
+	    string s;
+
+	    vector<string> renglones; 
+	    int cantDeRenglones = 0 ;
+	    int cantElementosPorRenglon = 0 ;
+
+	    while(getline(fs,s)){
+	        renglones.push_back(s);
+	        cantDeRenglones ++ ;
+	    }
+
+	    vector<vector<int> > pixeles;
+	    for(int i = 0 ;i < cantDeRenglones; i++){
+	    	pixeles.push_back(std::vector<int> ());
+	    }
+	    for(int i = 0 ;i < cantDeRenglones; i ++){
+	    	cantElementosPorRenglon = llenarRenglon(pixeles[i], renglones[i]);
+	    }
+
+	    imageMatrix = Image (pixeles, cantDeRenglones, cantElementosPorRenglon);
+
+	    //
+	    rayos_exp = vector<vector<int> >();
+	    for(int i = 0 ; i < imageMatrix.height; i ++){
+	    	rayos_exp.push_back(vector<int> (imageMatrix.width,0));
+    	}
+	}
+
+	TCSimulator(string path, string savingPath, string rayoSavingPath){
+		this->rayoSavingPath = rayoSavingPath;
 		this->savingPath = savingPath;
 		filebuf fb;
 		fb.open (path,std::ios::in);
@@ -373,7 +409,7 @@ public:
 		parsearEn16versionPro(imagenDesAplanada);
 		escribirCsv(imagenDesAplanada,savingPath);
 
-		escribirCsv(rayos_exp, "rayos_out/tuvieja.csv");
+		escribirCsv(rayos_exp, rayoSavingPath);
 		// cout << "bk7" << endl;
 		return newImage;
 	}
