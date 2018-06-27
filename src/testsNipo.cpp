@@ -1195,7 +1195,7 @@ int main(){
 	// testRayosOpuestosTomosCatedraPosta(20, 4);
 	// testRayosCruzadosTomosCatedraPosta(20, 4);
 	// testRayosFijosTomosCatedraPosta(20, 4);
-	testRayosAleatoriosPosta(20, 4);
+	// testRayosAleatoriosPosta(20, 4);
 	// string guardarRayos = "exp_nipo/rayos_out/rayo";
 	// string final = guardarRayos + to_string(2);
 	// cout << final << endl;
