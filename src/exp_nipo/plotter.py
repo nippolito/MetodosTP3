@@ -8,7 +8,7 @@ import math
 import numpy as np
 
 def expECMOpuestosTomo():
-	df1 = pd.read_csv('opuestosTomo1_capFinal.csv')
+	df1 = pd.read_csv('opuestosTomo1_capFinal_EcmGood.csv')
 
 	# Dens2 = df1[df1['densidad'] == 0.2]
 	# Dens5 = df1[df1['densidad'] == 0.5]
@@ -27,7 +27,7 @@ def expECMOpuestosTomo():
 	plt.show()
 
 def expECMCruzadosTomo():
-	df1 = pd.read_csv('cruzadosTomo1_capFinal.csv')
+	df1 = pd.read_csv('cruzadosTomo1_capFinal_EcmGood.csv')
 
 	# Dens2 = df1[df1['densidad'] == 0.2]
 	# Dens5 = df1[df1['densidad'] == 0.5]
@@ -46,7 +46,7 @@ def expECMCruzadosTomo():
 	plt.show()
 
 def expECMFijosTomo():
-	df1 = pd.read_csv('fijosTomo1_capFinal.csv')
+	df1 = pd.read_csv('fijosTomo1_capFinal_EcmGood.csv')
 
 	# Dens2 = df1[df1['densidad'] == 0.2]
 	# Dens5 = df1[df1['densidad'] == 0.5]
@@ -65,7 +65,7 @@ def expECMFijosTomo():
 	plt.show()
 
 def expECMAleatoriosTomo():
-	df1 = pd.read_csv('aleatoriosTomo1_capFinal.csv')
+	df1 = pd.read_csv('aleatoriosTomo1_capFinal_EcmGood.csv')
 
 	# Dens2 = df1[df1['densidad'] == 0.2]
 	# Dens5 = df1[df1['densidad'] == 0.5]
@@ -84,28 +84,20 @@ def expECMAleatoriosTomo():
 	plt.show()
 
 def expECMAleatorios2Tomo():
-	df1 = pd.read_csv('aleatoriosTomo1_capFinal2.csv')
-	df2 = pd.read_csv('aleatoriosTomo1_capFinal3.csv')
+	df1 = pd.read_csv('aleatoriosTomo1_capFinal_EcmGood2.csv')
 	df3 = pd.read_csv('aleatoriosTomo1_capFinal.csv')
-	df4 = pd.read_csv('aleatoriosTomo1_capFinal4.csv')
 
 	# Dens2 = df1[df1['densidad'] == 0.2]
 	# Dens5 = df1[df1['densidad'] == 0.5]
 
 	xdata  = df1['pctjeRayos']
-	xdata2 = df2['pctjeRayos']
 	xdata3 = df3['pctjeRayos']
-	xdata4 = df4['pctjeRayos']
 
 	ydata = df1['ECM']
-	ydata2 = df2['ECM']
 	ydata3 = df3['ECM']
-	ydata4 = df4['ECM']
 
 	plt.plot(xdata, ydata, "y.", alpha = 0.8, label='ECM segun %rayos')
-	plt.plot(xdata2, ydata2, "y.", alpha = 0.8, label = '')
 	plt.plot(xdata3, ydata3, "y.", alpha = 0.8, label = '')
-	plt.plot(xdata4, ydata4, "y.", alpha = 0.8, label = '')
 
 	plt.xlabel('%rayos con respecto a #pixeles')
 	plt.ylabel('ECM')
@@ -145,7 +137,7 @@ def expTiemposGeneradoresTomo():
 
 # expECMOpuestosTomo()
 # expECMCruzadosTomo()
-# expECMFijosTomo()
-# expECMAleatoriosTomo()
+expECMFijosTomo()
+expECMAleatoriosTomo()
 expECMAleatorios2Tomo()
 # expTiemposGeneradoresTomo()
