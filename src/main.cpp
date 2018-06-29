@@ -8,6 +8,7 @@
 #include <chrono>
 #include "matrizRala.h"
 #include <algorithm> 
+#include "auxiliar.h"
 
 
 using namespace std;
@@ -45,8 +46,50 @@ void pruebaCasoReal_3(){
 	return;
 }
 
-//path imagen / path saving / orden de magnitud / cantidad de rayos
-int main(int argc, char *argv[]){
+void test(){
+	string pathTomo = "../imgs_TC_out/tomo.csv";
+	string pathImgs = "grego_exp_img_day2";
+	string pathRayos = "grego_exp_rayos_day2";
+	int cantDeRayosInit = 1024;
+	int cantRayosAct = cantDeRayosInit;
+
+	int k = 5;
+	for(int i = 10 ; i < 40; i++){
+		cantRayosAct = cantDeRayosInit * i ;
+		for(int i = 0 ; i < k; i++){
+			cout << "cant de Rayos : " << cantRayosAct << endl;
+			cout << "iteracion : " << i << endl; 
+			TCSimulator Simulator(pathTomo, pathImgs + "/" + to_string(cantRayosAct)+ "_" + to_string(i),
+			 pathRayos  + "/" + to_string(cantRayosAct) + "_" + to_string(i));
+			Simulator.obtenerImagenPorRayos(0.1, 4,1,cantRayosAct);
+		} 
+	}
+}
+
+
+void test2(){
+	string pathTomo = "../imgs_TC_out/tomo.csv";
+	string pathImgs = "grego_exp_img_ord_2_day2";
+	string pathRayos = "grego_exp_rayos_ord_2_day2";
+	int cantDeRayosInit = 1024;
+	int cantRayosAct = cantDeRayosInit;
+
+	int k = 1;
+	for(int i = 13 ; i < 40; i++){
+		cantRayosAct = cantDeRayosInit * i ;
+		for(int i = 0 ; i < k; i++){
+			cout << "cant de Rayos : " << cantRayosAct << endl;
+			cout << "iteracion : " << i << endl; 
+			TCSimulator Simulator(pathTomo, pathImgs + "/" + to_string(cantRayosAct)+ "_" + to_string(i),
+			 pathRayos  + "/" + to_string(cantRayosAct) + "_" + to_string(i));
+			Simulator.obtenerImagenPorRayos(0.1, 2,1,cantRayosAct);
+		} 
+	}
+}
+
+//path imagen / path saving / rayos_saving_path / orden de magnitud / cantidad de rayos
+
+int main2(int argc, char *argv[]){
 	string path = argv[1];
 	string saving_path = argv[2];
 	string rayos_saving_path = argv[3];
@@ -62,9 +105,41 @@ int main(int argc, char *argv[]){
 }
 
 
+void pruebaRayos(){
+	string path = "../imgs_TC_out/resize_tomo.csv";
+	TCSimulator Simulator(path, "grego_out/pruebaRayos.csv", "grego_out/rayos_pruebaRayos.csv");
+	//Simulator.logInfoImage();
+	vector<pair<pair<double,double>, pair<double,double> > > muchasEstrellas = generarMuchasEstrellas();
+	cout << "cantidad de rayos: " << muchasEstrellas.size() << endl;
+	Simulator.generarRayos(muchasEstrellas.size(), muchasEstrellas);
+	Image imgRes = Simulator.regenerarImagenConDiscretizacion(4);
+
+	return;
+}
 
 
 
+void calcularEcm(int argc, char *argv[]){
+	vector<vector<int> > original = levantarCsv(argv[1]);
+	vector<vector<int> > construida = levantarCsv(argv[2]);
+
+	vector<double> original_d = pasarDeImagenAVecDouble(original);
+	vector<double> construida_d = pasarDeImagenAVecDouble(construida);
+
+	original_d = normalizar(original_d);
+	construida_d = normalizar(construida_d);
+	cout << "el ecm entre las dos imagenes es : " << ECM(original_d, construida_d) << endl;
+}
+
+
+int main(int argc, char *argv[]){
+	calcularEcm(argc, argv);
+	//main2(argc, argv);
+	//mostrarRayos();
+	//pruebaRayos();
+	//test2();
+	return 0 ; 
+}
 
 
 
