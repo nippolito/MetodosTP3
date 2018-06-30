@@ -18,6 +18,7 @@ def expECMOpuestosTomo():
 	ydata = df1['ECM']
 
 	plt.plot(xdata, ydata, "r.", alpha = 0.5, label='ECM segun %rayos')
+	plt.plot(200, 0.6)
 
 	plt.xlabel('%rayos con respecto a #pixeles')
 	plt.ylabel('ECM')
@@ -37,6 +38,7 @@ def expECMCruzadosTomo():
 	ydata = df1['ECM']
 
 	plt.plot(xdata, ydata, "b.", alpha = 0.5, label='ECM segun %rayos')
+	plt.plot(200, 0.6)
 
 	plt.xlabel('%rayos con respecto a #pixeles')
 	plt.ylabel('ECM')
@@ -56,6 +58,7 @@ def expECMFijosTomo():
 	ydata = df1['ECM']
 
 	plt.plot(xdata, ydata, "g.", alpha = 0.5, label='ECM segun %rayos')
+	plt.plot(200, 0.6)
 
 	plt.xlabel('%rayos con respecto a #pixeles')
 	plt.ylabel('ECM')
@@ -75,6 +78,7 @@ def expECMAleatoriosTomo():
 	ydata = df1['ECM']
 
 	plt.plot(xdata, ydata, "y.", alpha = 1, label='ECM segun %rayos')
+	plt.plot(200, 0.6)
 
 	plt.xlabel('%rayos con respecto a #pixeles')
 	plt.ylabel('ECM')
@@ -127,6 +131,7 @@ def expTiemposGeneradoresTomo():
 	plt.plot(xdata, ydata2, "b.", alpha = 0.5, label='Rayos Cruzados')
 	plt.plot(xdata, ydata3, "g.", alpha = 0.5, label='Rayos Punto Fijo')
 	plt.plot(xdata, ydata4, "y.", alpha = 0.5, label='Rayos Aleatorios')
+	plt.plot(200, 40000)
 
 	plt.xlabel('%rayos con respecto a #pixeles')
 	plt.ylabel('tiempo')
@@ -135,9 +140,9 @@ def expTiemposGeneradoresTomo():
 	plt.legend()
 	plt.show()
 
-# expECMOpuestosTomo()
-# expECMCruzadosTomo()
+expECMOpuestosTomo()
+expECMCruzadosTomo()
 expECMFijosTomo()
 expECMAleatoriosTomo()
-expECMAleatorios2Tomo()
+# expECMAleatorios2Tomo()
 # expTiemposGeneradoresTomo()

@@ -1120,7 +1120,10 @@ void testRayosAleatoriosPosta(int kMax, int ordenMagnitud){
 // fijo 300% rayos aleatorios, 15 imágenes dicom, p = 0.1
 void exportAtAyAtb(int cantImages){
 	string pathEntrada = "exp_nipo/condition_number_exp/csvs_in/";
+	fstream sal1("exp_nipo/asdf.csv", ios::out);
+	std::chrono::time_point<std::chrono::system_clock> start, end;
 
+	sal1 << "tiempo" << endl;
 	// 
 
 
@@ -1152,7 +1155,8 @@ void exportAtAyAtb(int cantImages){
 	// levanto 256x256 y lo hago con discretización 4 (o sea 64x64)
 	cout << "Voy por discretizacion 4" << endl;
 	cantPixelesDiscretizacion = 64*64;
-	for(int i = 0; i < cantImages; i++){
+	for(int i = 9; i < cantImages; i++){
+		cout << "Voy por imagen " << i << endl;
 
 		string pathImagenEntrada = pathEntrada + "256x256/" + to_string(i) + ".csv";
 		string pathImagenReducidaSinCsv = pathEntrada + "64x64/" + to_string(i);
@@ -1166,7 +1170,12 @@ void exportAtAyAtb(int cantImages){
 		// creo que el vector vacío de tamaño 300%
 		vector<pair<pair<double, double>, pair<double, double> > > vecVacio(cantPixelesDiscretizacion * 3);
 
+		start = std::chrono::system_clock::now();
 		vector<double> nuevaImagen = Simulator1.obtenerImagenPorRayos(vecVacio, 0.1, 4, 1);
+		end = std::chrono::system_clock::now();
+		std::chrono::duration<double, std::milli> elapsed_seconds = end-start;
+
+		sal1 << elapsed_seconds.count() << endl;
 
 		// no tengo que calcular el ECM, después puede que lo haga en octave, veremos
 	}
@@ -1176,7 +1185,7 @@ void compararECMsImagenes(){
 	// Primero 32x32
 	cout << "sale 32x32" << endl;
 
-	fstream sal1("exp_nipo/condiion_number_exp/ecms32x32.csv", ios::out);
+	fstream sal1("exp_nipo/condition_number_exp/ecms32x32.csv", ios::out);
 
 	sal1 << "ECMon,ECMom" << endl;
 
@@ -1205,35 +1214,35 @@ void compararECMsImagenes(){
 	}
 
 	// Ahora 64x64
-	cout << "sale 64x64" << endl;
+	// cout << "sale 64x64" << endl;
 
-	fstream sal2("exp_nipo/condiion_number_exp/ecms64x64.csv", ios::out);
+	// fstream sal2("exp_nipo/condition_number_exp/ecms64x64.csv", ios::out);
 
-	sal2 << "ECMon,ECMom" << endl;
+	// sal2 << "ECMon,ECMom" << endl;
 
-	pathEntradaOctave = "exp_nipo/condition_number_exp/out_images/64x64/";
-	pathEntradaReal = "exp_nipo/condition_number_exp/csvs_in/64x64/";
-	for(int i = 0; i < 15; i++){
-		string pathImagenOriginalSinCsv = pathEntradaReal + to_string(i);
-		vector<int> imagenOriginal = csvToVector(pathImagenOriginalSinCsv);
-		vector<double> imagenOriginalDouble = vectorIntToVectorDouble(imagenOriginal);
-		vector<double> origNormalizada = normalizar(imagenOriginalDouble);
+	// pathEntradaOctave = "exp_nipo/condition_number_exp/out_images/64x64/";
+	// pathEntradaReal = "exp_nipo/condition_number_exp/csvs_in/64x64/";
+	// for(int i = 0; i < 15; i++){
+	// 	string pathImagenOriginalSinCsv = pathEntradaReal + to_string(i);
+	// 	vector<int> imagenOriginal = csvToVector(pathImagenOriginalSinCsv);
+	// 	vector<double> imagenOriginalDouble = vectorIntToVectorDouble(imagenOriginal);
+	// 	vector<double> origNormalizada = normalizar(imagenOriginalDouble);
 
-		string pathImagenOctaveNormalSinCsv = pathEntradaOctave + to_string(i) + "_normal";
-		vector<int> imagenOctaveNormal = csvToVector(pathImagenOctaveNormalSinCsv);
-		vector<double> imagenOctaveNormalDouble = vectorIntToVectorDouble(imagenOctaveNormal);
-		vector<double> octaveNormalNormalizada = normalizar(imagenOctaveNormalDouble);
+	// 	string pathImagenOctaveNormalSinCsv = pathEntradaOctave + to_string(i) + "_normal";
+	// 	vector<int> imagenOctaveNormal = csvToVector(pathImagenOctaveNormalSinCsv);
+	// 	vector<double> imagenOctaveNormalDouble = vectorIntToVectorDouble(imagenOctaveNormal);
+	// 	vector<double> octaveNormalNormalizada = normalizar(imagenOctaveNormalDouble);
 
-		string pathImagenOctaveModifSinCsv = pathEntradaOctave + to_string(i) + "_modif";
-		vector<int> imagenOctaveModif = csvToVector(pathImagenOctaveModifSinCsv);
-		vector<double> imagenOctaveModifDouble = vectorIntToVectorDouble(imagenOctaveModif);
-		vector<double> octaveModifNormalizada = normalizar(imagenOctaveModifDouble);
+	// 	string pathImagenOctaveModifSinCsv = pathEntradaOctave + to_string(i) + "_modif";
+	// 	vector<int> imagenOctaveModif = csvToVector(pathImagenOctaveModifSinCsv);
+	// 	vector<double> imagenOctaveModifDouble = vectorIntToVectorDouble(imagenOctaveModif);
+	// 	vector<double> octaveModifNormalizada = normalizar(imagenOctaveModifDouble);
 
-		double ecm1 = ECM(origNormalizada, octaveNormalNormalizada);
-		double ecm2 = ECM(origNormalizada, octaveModifNormalizada);
+	// 	double ecm1 = ECM(origNormalizada, octaveNormalNormalizada);
+	// 	double ecm2 = ECM(origNormalizada, octaveModifNormalizada);
 
-		sal2 << ecm1 << "," << ecm2 << endl;
-	}
+	// 	sal2 << ecm1 << "," << ecm2 << endl;
+	// }
 }
 
 
