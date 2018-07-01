@@ -45,7 +45,7 @@ void pruebaCasoReal_3(){
 
 	return;
 }
-
+/*
 void test(){
 	string pathTomo = "../imgs_TC_out/tomo.csv";
 	string pathImgs = "grego_exp_img_day2";
@@ -116,9 +116,16 @@ void pruebaRayos(){
 
 	return;
 }
-
-
-
+/*
+double ECM(vector<double> v1, vector<double> v2){
+		double res = 0;
+		for(int i = 0; i < v1.size(); i++){
+			res += pow((v1[i] - v2[i]), 2);
+		}
+		res = res / v1.size();
+		return res;
+	}
+*/
 void calcularEcm(int argc, char *argv[]){
 	vector<vector<int> > original = levantarCsv(argv[1]);
 	vector<vector<int> > construida = levantarCsv(argv[2]);
@@ -132,6 +139,22 @@ void calcularEcm(int argc, char *argv[]){
 }
 
 
+double calcularEcmEMI(string pathoriginal, string pathconstruida){
+	cout <<"calculando ECM" << endl;
+	vector<vector<int> > original = levantarCsv(pathoriginal);
+	vector<vector<int> > construida = levantarCsv(pathconstruida);
+
+	cout << "paso 1" << endl;
+	vector<double> original_d = pasarDeImagenAVecDouble(original);
+	vector<double> construida_d = pasarDeImagenAVecDouble(construida);
+	cout << "paso 2" << endl;
+	original_d = normalizar(original_d);
+	construida_d = normalizar(construida_d);
+	return ECM(original_d, construida_d); 
+
+}
+
+/*
 int main(int argc, char *argv[]){
 	calcularEcm(argc, argv);
 	//main2(argc, argv);
@@ -140,7 +163,7 @@ int main(int argc, char *argv[]){
 	//test2();
 	return 0 ; 
 }
-
+*/
 
 
 
